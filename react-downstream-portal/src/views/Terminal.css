@@ -1,0 +1,11 @@
+.Terminal-base {
+  height: 100%;
+  width: 100%;
+  background-color: white;
+}
+
+.Terminal-textarea {
+  height: 100%;
+  width: 100%;
+  font-family: "Noto Sans Mono CJK JP Regular";
+}
