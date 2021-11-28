@@ -1,45 +1,22 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
-
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
+    <div className="h-screen w-screen flex justify-center items-center bg-gray-100">
+      <div className="h-96 w-96 bg-white flex justify-center items-center drop-shadow">
+        <form
+          className="border border-black"
+          onSubmit={(e) => {
+            console.info(e);
+            e.preventDefault();
+          }}
+        >
+          <input type="text" className="w-60 p-1" />
+          <button type="submit" className="bg-blue-500 text-white px-2 py-1">
+            Search
           </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+        </form>
+      </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
