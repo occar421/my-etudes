@@ -1,10 +1,23 @@
-import { DialogBase, useDialogBase } from "./DialogBase";
 import { AlphaDialog, useAlphaDialog } from "./AlphaDialog";
+import { BetaDialog, useBetaDialog } from "./BetaDialog";
 
 function App() {
-  const alphaDialog = useAlphaDialog();
-  const betaDialog = useDialogBase({
-    onClose: () => betaDialog.exports.close(),
+  const alphaDialog = useAlphaDialog({
+    onAccept: () => {
+      console.info("Alpha accepted.");
+      alphaDialog.exports.close();
+    },
+    onCancel: () => {
+      console.info("Alpha canceled.");
+      alphaDialog.exports.close();
+    },
+  });
+
+  const betaDialog = useBetaDialog({
+    onAccept: () => {
+      console.info("Alpha accepted.");
+      betaDialog.exports.close();
+    },
   });
 
   return (
@@ -28,22 +41,8 @@ function App() {
         >
           Open Beta
         </button>
-        <AlphaDialog
-          {...alphaDialog.messages}
-          onAccept={() => {
-            console.info("Alpha accepted.");
-            alphaDialog.messages.onAccept?.();
-            alphaDialog.exports.close();
-          }}
-          onCancel={() => {
-            console.info("Alpha canceled.");
-            alphaDialog.messages.onCancel?.();
-            alphaDialog.exports.close();
-          }}
-        />
-        <DialogBase {...betaDialog.messages}>
-          <p>bbb</p>
-        </DialogBase>
+        <AlphaDialog {...alphaDialog.messages} />
+        <BetaDialog {...betaDialog.messages} />
       </div>
     </div>
   );
