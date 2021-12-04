@@ -41,8 +41,8 @@ function App() {
         >
           Open Beta
         </button>
-        <AlphaDialog {...alphaDialog.messages} />
-        <BetaDialog {...betaDialog.messages} />
+        <AlphaDialog {...alphaDialog.props} />
+        <BetaDialog {...betaDialog.props} />
       </div>
     </div>
   );

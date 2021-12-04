@@ -6,8 +6,8 @@ type Args = {
   onCancel?: () => void;
 };
 
-type Messages = {
-  baseMessages: ReturnType<typeof useDialogBase>["messages"];
+type Props = {
+  baseProps: ReturnType<typeof useDialogBase>["props"];
   cookieChecked: boolean;
   onChangeCookieChecked?: () => void;
 } & Args;
@@ -16,19 +16,16 @@ type Exports = { show: () => void; close: () => void };
 
 export const useAlphaDialog = (
   args: Args = {}
-): { messages: Messages; exports: Exports } => {
-  const dialogBase = useDialogBase();
+): { props: Props; exports: Exports } => {
+  const dialogBase = useDialogBase({ onClose: args.onCancel });
 
   const [checked, setChecked] = useState(false);
 
   return {
-    messages: {
-      baseMessages: dialogBase.messages,
+    props: {
+      baseProps: dialogBase.props,
       onAccept: args.onAccept,
-      onCancel: () => {
-        dialogBase.messages.onClose?.();
-        args.onCancel?.();
-      },
+      onCancel: args.onCancel,
       cookieChecked: checked,
       onChangeCookieChecked: () => {
         setChecked((x) => !x);
@@ -45,16 +42,14 @@ export const useAlphaDialog = (
   };
 };
 
-type Props = Messages;
-
 export const AlphaDialog = ({
-  baseMessages,
+  baseProps,
   cookieChecked,
   onChangeCookieChecked,
   onAccept,
   onCancel,
 }: Props) => (
-  <DialogBase {...baseMessages} onClose={onCancel}>
+  <DialogBase {...baseProps}>
     <div className="bg-white border border-gray-700 rounded w-[400px] p-3">
       <header>
         <h2 className="font-bold text-xl">Alpha Dialog</h2>

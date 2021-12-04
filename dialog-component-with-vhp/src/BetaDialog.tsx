@@ -4,30 +4,28 @@ type Args = {
   onAccept?: () => void;
 };
 
-type Messages = {
-  baseMessages: ReturnType<typeof useDialogBase>["messages"];
+type Props = {
+  baseProps: ReturnType<typeof useDialogBase>["props"];
 } & Args;
 
 type Exports = { show: () => void; close: () => void };
 
 export const useBetaDialog = (
   args: Args = {}
-): { messages: Messages; exports: Exports } => {
+): { props: Props; exports: Exports } => {
   const dialogBase = useDialogBase();
 
   return {
-    messages: {
-      baseMessages: dialogBase.messages,
+    props: {
+      baseProps: dialogBase.props,
       onAccept: args.onAccept,
     },
     exports: { show: dialogBase.exports.show, close: dialogBase.exports.close },
   };
 };
 
-type Props = Messages;
-
-export const BetaDialog = ({ baseMessages, onAccept }: Props) => (
-  <DialogBase {...baseMessages}>
+export const BetaDialog = ({ baseProps, onAccept }: Props) => (
+  <DialogBase {...baseProps}>
     <div className="bg-white border border-gray-700 rounded w-[400px] p-3">
       <header>
         <h2 className="font-bold text-xl">Beta Dialog</h2>

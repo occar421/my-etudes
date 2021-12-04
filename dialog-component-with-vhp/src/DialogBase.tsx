@@ -5,20 +5,20 @@ type Args = {
   onClose?: () => void;
 };
 
-type Messages = { open: boolean; onClose?: () => void };
+type Props = { open: boolean; onClose?: () => void };
 
 type Exports = { show: () => void; close: () => void };
 
 export const useDialogBase = (
   args: Args = {}
 ): {
-  messages: Messages;
+  props: Props;
   exports: Exports;
 } => {
   const [open, setOpen] = useState(false);
 
   return {
-    messages: { open, onClose: args.onClose },
+    props: { open, onClose: args.onClose },
     exports: {
       show: () => {
         setOpen(true);
@@ -30,9 +30,11 @@ export const useDialogBase = (
   };
 };
 
-type Props = Messages & { children: ReactNode };
-
-export const DialogBase = ({ open, onClose, children }: Props) => {
+export const DialogBase = ({
+  open,
+  onClose,
+  children,
+}: Props & { children: ReactNode }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
