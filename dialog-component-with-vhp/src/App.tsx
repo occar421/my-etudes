@@ -32,10 +32,12 @@ function App() {
           {...alphaDialog.messages}
           onAccept={() => {
             console.info("Alpha accepted.");
+            alphaDialog.messages.onAccept?.();
             alphaDialog.exports.close();
           }}
           onCancel={() => {
             console.info("Alpha canceled.");
+            alphaDialog.messages.onCancel?.();
             alphaDialog.exports.close();
           }}
         />
