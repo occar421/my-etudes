@@ -17,16 +17,16 @@ export const useDialogBase = (
 } => {
   const [open, setOpen] = useState(false);
 
-  const show = () => {
-    setOpen(true);
-  };
-  const close = () => {
-    setOpen(false);
-  };
-
   return {
     messages: { open, onClose: args.onClose },
-    exports: { show, close },
+    exports: {
+      show: () => {
+        setOpen(true);
+      },
+      close: () => {
+        setOpen(false);
+      },
+    },
   };
 };
 
@@ -75,7 +75,11 @@ export const DialogBase = ({ open, onClose, children }: Props) => {
 
   return createPortal(
     open ? (
-      <div className="fixed inset-0 h-screen w-screen z-40 flex items-center justify-center bg-gray-500 bg-opacity-75 transition-opacity">
+      <div
+        className=" fixed inset-0 h-screen w-screen z-40
+                    flex items-center justify-center
+                    bg-gray-500 bg-opacity-75 transition-opacity"
+      >
         <div ref={contentRef}>{children}</div>
       </div>
     ) : null,
