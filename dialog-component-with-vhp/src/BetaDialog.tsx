@@ -14,9 +14,9 @@ type Exports = {
 };
 
 export const useBetaDialog = (
-  args: Args = {}
+  args: Args
 ): { props: Props; exports: Exports } => {
-  const dialogBase = useDialogBase();
+  const dialogBase = useDialogBase({});
 
   return {
     props: {

@@ -19,7 +19,7 @@ type Exports = {
 };
 
 export const useAlphaDialog = (
-  args: Args = {}
+  args: Args
 ): { props: Props; exports: Exports } => {
   const dialogBase = useDialogBase({ onClose: args.onCancel });
 

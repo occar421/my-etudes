@@ -6,9 +6,8 @@ type Args = {
 };
 
 type Props = {
-  open: boolean;
-  onClose?: () => void;
-};
+  open?: boolean;
+} & Args;
 
 type Exports = {
   show: () => void;
@@ -16,7 +15,7 @@ type Exports = {
 };
 
 export const useDialogBase = (
-  args: Args = {}
+  args: Args
 ): {
   props: Props;
   exports: Exports;
