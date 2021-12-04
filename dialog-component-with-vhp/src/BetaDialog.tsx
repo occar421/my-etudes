@@ -8,7 +8,10 @@ type Props = {
   baseProps: ReturnType<typeof useDialogBase>["props"];
 } & Args;
 
-type Exports = { show: () => void; close: () => void };
+type Exports = {
+  show: () => void;
+  close: () => void;
+};
 
 export const useBetaDialog = (
   args: Args = {}

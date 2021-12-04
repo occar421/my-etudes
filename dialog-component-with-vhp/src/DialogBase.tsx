@@ -5,9 +5,15 @@ type Args = {
   onClose?: () => void;
 };
 
-type Props = { open: boolean; onClose?: () => void };
+type Props = {
+  open: boolean;
+  onClose?: () => void;
+};
 
-type Exports = { show: () => void; close: () => void };
+type Exports = {
+  show: () => void;
+  close: () => void;
+};
 
 export const useDialogBase = (
   args: Args = {}

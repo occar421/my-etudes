@@ -12,7 +12,10 @@ type Props = {
   onChangeCookieChecked?: () => void;
 } & Args;
 
-type Exports = { show: () => void; close: () => void };
+type Exports = {
+  show: () => void;
+  close: () => void;
+};
 
 export const useAlphaDialog = (
   args: Args = {}
