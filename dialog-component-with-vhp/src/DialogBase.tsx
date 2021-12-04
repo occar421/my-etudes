@@ -1,38 +1,38 @@
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-type Messages = { open: boolean; onClose: () => void };
+type Args = {
+  onClose?: () => void;
+};
+
+type Messages = { open: boolean; onClose?: () => void };
 
 type Exports = { show: () => void; close: () => void };
 
-export const useDialog = (): {
+export const useDialogBase = (
+  args: Args = {}
+): {
   messages: Messages;
   exports: Exports;
 } => {
   const [open, setOpen] = useState(false);
 
-  const show = useCallback(() => {
+  const show = () => {
     setOpen(true);
-  }, []);
-  const close = useCallback(() => {
+  };
+  const close = () => {
     setOpen(false);
-  }, []);
+  };
 
   return {
-    messages: { open, onClose: close },
+    messages: { open, onClose: args.onClose },
     exports: { show, close },
   };
 };
 
 type Props = Messages & { children: ReactNode };
 
-export const Dialog = ({ open, onClose, children }: Props) => {
+export const DialogBase = ({ open, onClose, children }: Props) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export const Dialog = ({ open, onClose, children }: Props) => {
           contentRef.current &&
           !contentRef.current.contains(e.target)
         ) {
-          onClose();
+          onClose?.();
         }
       },
       {

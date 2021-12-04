@@ -1,8 +1,11 @@
-import { Dialog, useDialog } from "./Dialog";
+import { DialogBase, useDialogBase } from "./DialogBase";
+import { AlphaDialog, useAlphaDialog } from "./AlphaDialog";
 
 function App() {
-  const alphaDialog = useDialog();
-  const betaDialog = useDialog();
+  const alphaDialog = useAlphaDialog();
+  const betaDialog = useDialogBase({
+    onClose: () => betaDialog.exports.close(),
+  });
 
   return (
     <div className="h-screen w-screen flex justify-center items-center bg-gray-100">
@@ -25,12 +28,20 @@ function App() {
         >
           Open Beta
         </button>
-        <Dialog {...alphaDialog.messages}>
-          <p>aaa</p>
-        </Dialog>
-        <Dialog {...betaDialog.messages}>
+        <AlphaDialog
+          {...alphaDialog.messages}
+          onAccept={() => {
+            console.info("Alpha accepted.");
+            alphaDialog.exports.close();
+          }}
+          onCancel={() => {
+            console.info("Alpha canceled.");
+            alphaDialog.exports.close();
+          }}
+        />
+        <DialogBase {...betaDialog.messages}>
           <p>bbb</p>
-        </Dialog>
+        </DialogBase>
       </div>
     </div>
   );
