@@ -36,6 +36,10 @@ export const DialogBase = ({ open, onClose, children }: Props) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!open) {
+      return;
+    }
+
     const controller = new AbortController();
 
     document.addEventListener(
@@ -54,10 +58,20 @@ export const DialogBase = ({ open, onClose, children }: Props) => {
       }
     );
 
+    document.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.key === "Escape") {
+          onClose?.();
+        }
+      },
+      { signal: controller.signal }
+    );
+
     return () => {
       controller.abort();
     };
-  }, []);
+  }, [open]);
 
   return createPortal(
     open ? (

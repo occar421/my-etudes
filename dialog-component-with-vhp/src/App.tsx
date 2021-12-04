@@ -15,7 +15,7 @@ function App() {
 
   const betaDialog = useBetaDialog({
     onAccept: () => {
-      console.info("Alpha accepted.");
+      console.info("Beta accepted.");
       betaDialog.exports.close();
     },
   });
