@@ -15,6 +15,7 @@ type Props = {
 type Exports = {
   show: () => void;
   close: () => void;
+  clear: () => void;
 };
 
 export const useAlphaDialog = (
@@ -35,12 +36,11 @@ export const useAlphaDialog = (
       },
     },
     exports: {
-      show: () => {
-        setChecked(false);
-
-        dialogBase.exports.show();
-      },
+      show: dialogBase.exports.show,
       close: dialogBase.exports.close,
+      clear: () => {
+        setChecked(false);
+      },
     },
   };
 };
