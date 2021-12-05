@@ -1,16 +1,21 @@
 import { AlphaDialog, useAlphaDialog } from "./AlphaDialog";
 import { BetaDialog, useBetaDialog } from "./BetaDialog";
+import { useCallback } from "react";
+
+type AlphaDialogArgs = Required<Parameters<typeof useAlphaDialog>[0]>;
 
 function App() {
+  const onAccept = useCallback<AlphaDialogArgs["onAccept"]>(function () {
+    console.info("Alpha accepted.");
+    this.close();
+  }, []);
+
   const alphaDialog = useAlphaDialog({
-    onAccept: () => {
-      console.info("Alpha accepted.");
-      alphaDialog.exports.close();
-    },
-    onCancel: () => {
+    onAccept,
+    onCancel: useCallback<AlphaDialogArgs["onCancel"]>(function () {
       console.info("Alpha canceled.");
-      alphaDialog.exports.close();
-    },
+      this.close();
+    }, []),
   });
 
   const betaDialog = useBetaDialog({

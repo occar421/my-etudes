@@ -1,5 +1,6 @@
 import { DialogBase, useDialogBase } from "./DialogBase";
 import { useState } from "react";
+import { Bound } from "./Type";
 
 type Args = {
   onAccept?: () => void;
@@ -19,29 +20,31 @@ type Exports = {
 };
 
 export const useAlphaDialog = (
-  args: Args
+  args: Bound<Args, Exports>
 ): { props: Props; exports: Exports } => {
   const dialogBase = useDialogBase({ onClose: args.onCancel });
 
   const [checked, setChecked] = useState(false);
 
+  const exports = {
+    show: dialogBase.exports.show,
+    close: dialogBase.exports.close,
+    clear: () => {
+      setChecked(false);
+    },
+  };
+
   return {
     props: {
       baseProps: dialogBase.props,
-      onAccept: args.onAccept,
-      onCancel: args.onCancel,
+      onAccept: args.onAccept?.bind(exports),
+      onCancel: args.onCancel?.bind(exports),
       cookieChecked: checked,
       onChangeCookieChecked: () => {
         setChecked((x) => !x);
       },
     },
-    exports: {
-      show: dialogBase.exports.show,
-      close: dialogBase.exports.close,
-      clear: () => {
-        setChecked(false);
-      },
-    },
+    exports,
   };
 };
 
