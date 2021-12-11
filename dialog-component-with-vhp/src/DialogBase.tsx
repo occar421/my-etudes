@@ -1,5 +1,32 @@
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { Dispatch, type ReactNode, useEffect, useReducer, useRef } from "react";
 import { createPortal } from "react-dom";
+
+type InternalState = { open: boolean };
+
+type Action = { type: "Show" } | { type: "Close" };
+
+const reducer = (prevState: InternalState, action: Action): InternalState => {
+  switch (action.type) {
+    case "Show":
+      return { ...prevState, open: true };
+    case "Close":
+      return { ...prevState, open: false };
+  }
+};
+
+type InitialState = { open: boolean };
+
+const convert = (initialState: InitialState): InternalState => initialState;
+
+export const useDialogBaseReducer = (
+  initializer?: InitialState | (() => InitialState)
+) =>
+  useReducer(
+    reducer,
+    initializer
+      ? convert(typeof initializer === "function" ? initializer() : initializer)
+      : { open: false }
+  );
 
 type Args = {
   onClose?: () => void;
@@ -9,29 +36,13 @@ type Props = {
   open?: boolean;
 } & Args;
 
-type Exports = {
-  show: () => void;
-  close: () => void;
-};
-
-export const useDialogBase = (
+export const useDialogBaseProps = (
+  [{ open }]: [InternalState, Dispatch<Action>],
   args: Args
-): {
-  props: Props;
-  exports: Exports;
-} => {
-  const [open, setOpen] = useState(false);
-
+): Props => {
   return {
-    props: { open, onClose: args.onClose },
-    exports: {
-      show: () => {
-        setOpen(true);
-      },
-      close: () => {
-        setOpen(false);
-      },
-    },
+    open,
+    onClose: args.onClose,
   };
 };
 

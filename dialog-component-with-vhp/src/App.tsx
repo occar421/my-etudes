@@ -1,6 +1,13 @@
 import { AlphaDialog, useAlphaDialog } from "./AlphaDialog";
 import { BetaDialog, useBetaDialog } from "./BetaDialog";
-import { useCallback } from "react";
+import { useCallback, useReducer } from "react";
+import {
+  DialogBase,
+  reducerOfDialogBase,
+  useDialogBase,
+  useDialogBaseProps,
+  useDialogBaseReducer,
+} from "./DialogBase";
 
 type AlphaDialogArgs = Required<Parameters<typeof useAlphaDialog>[0]>;
 
@@ -22,6 +29,13 @@ function App() {
     onAccept: () => {
       console.info("Beta accepted.");
       betaDialog.exports.close();
+    },
+  });
+
+  const [gammaInternalState, gammaDispatch] = useDialogBaseReducer();
+  const gammaProps = useDialogBaseProps([gammaInternalState, gammaDispatch], {
+    onClose: () => {
+      gammaDispatch({ type: "Close" });
     },
   });
 
@@ -49,6 +63,7 @@ function App() {
         </button>
         <AlphaDialog {...alphaDialog.props} />
         <BetaDialog {...betaDialog.props} />
+        <DialogBase {...gammaProps}>γ</DialogBase>
       </div>
     </div>
   );
