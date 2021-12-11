@@ -1,11 +1,14 @@
-import { Dispatch, type ReactNode, useEffect, useReducer, useRef } from "react";
+import { type ReactNode, useEffect, useReducer, useRef } from "react";
 import { createPortal } from "react-dom";
 
 type InternalState = { open: boolean };
 
 type Action = { type: "Show" } | { type: "Close" };
 
-const reducer = (prevState: InternalState, action: Action): InternalState => {
+export const reducer = (
+  prevState: InternalState,
+  action: Action
+): InternalState => {
   switch (action.type) {
     case "Show":
       return { ...prevState, open: true };
@@ -20,13 +23,16 @@ const convert = (initialState: InitialState): InternalState => initialState;
 
 export const useDialogBaseReducer = (
   initializer?: InitialState | (() => InitialState)
-) =>
-  useReducer(
+) => {
+  const [state, dispatch] = useReducer(
     reducer,
     initializer
       ? convert(typeof initializer === "function" ? initializer() : initializer)
       : { open: false }
   );
+
+  return { state, dispatch };
+};
 
 type Args = {
   onClose?: () => void;
@@ -37,11 +43,11 @@ type Props = {
 } & Args;
 
 export const useDialogBaseProps = (
-  [{ open }]: [InternalState, Dispatch<Action>],
+  { state }: ReturnType<typeof useDialogBaseReducer>,
   args: Args
 ): Props => {
   return {
-    open,
+    open: state.open,
     onClose: args.onClose,
   };
 };

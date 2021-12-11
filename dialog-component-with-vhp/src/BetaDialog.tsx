@@ -1,11 +1,37 @@
-import { DialogBase, useDialogBase } from "./DialogBase";
+import {
+  DialogBase,
+  reducerForDialogBase,
+  useDialogBaseProps,
+} from "./DialogBase";
+import { Dispatch } from "react";
+
+type State = {
+  baseState: Parameters<typeof reducerForDialogBase>[0];
+};
+
+type Action = { type: "Show" } | { type: "Close" };
+
+export const reducer = (prevState: State, action: Action): State => {
+  switch (action.type) {
+    case "Show":
+      return {
+        ...prevState,
+        baseState: reducerForDialogBase(prevState.baseState, { type: "Show" }),
+      };
+    case "Close":
+      return {
+        ...prevState,
+        baseState: reducerForDialogBase(prevState.baseState, { type: "Close" }),
+      };
+  }
+};
 
 type Args = {
   onAccept?: () => void;
 };
 
 type Props = {
-  baseProps: ReturnType<typeof useDialogBase>["props"];
+  baseProps: ReturnType<typeof useDialogBaseProps>;
 } & Args;
 
 type Exports = {
@@ -13,10 +39,11 @@ type Exports = {
   close: () => void;
 };
 
-export const useBetaDialog = (
-  args: Args
-): { props: Props; exports: Exports } => {
-  const dialogBase = useDialogBase({});
+export const useBetaDialog = ([{ baseState }]: [
+  State,
+  Dispatch<Action>
+]): Props => {
+  const dialogBase = useDialogBaseProps([baseState]);
 
   return {
     props: {

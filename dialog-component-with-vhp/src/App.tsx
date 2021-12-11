@@ -1,10 +1,8 @@
 import { AlphaDialog, useAlphaDialog } from "./AlphaDialog";
 import { BetaDialog, useBetaDialog } from "./BetaDialog";
-import { useCallback, useReducer } from "react";
+import { useCallback } from "react";
 import {
   DialogBase,
-  reducerOfDialogBase,
-  useDialogBase,
   useDialogBaseProps,
   useDialogBaseReducer,
 } from "./DialogBase";
@@ -32,10 +30,10 @@ function App() {
     },
   });
 
-  const [gammaInternalState, gammaDispatch] = useDialogBaseReducer();
-  const gammaProps = useDialogBaseProps([gammaInternalState, gammaDispatch], {
+  const bus = useDialogBaseReducer();
+  const gammaProps = useDialogBaseProps(bus, {
     onClose: () => {
-      gammaDispatch({ type: "Close" });
+      bus.dispatch({ type: "Close" });
     },
   });
 
