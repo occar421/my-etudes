@@ -3,13 +3,15 @@ import {
   useDialogBaseProps,
   useDialogBaseReducer,
 } from "./DialogBase";
-import { useReducer, useRef } from "react";
+import { Dispatch, useReducer, useRef } from "react";
 
 type InternalState = {
   getBaseBus: () => ReturnType<typeof useDialogBaseReducer>;
 };
 
-type Action = { type: "Show" } | { type: "Close" };
+type PublicAction = { type: "Show" } | { type: "Close" };
+
+type Action = PublicAction;
 
 const reducer = (prevState: InternalState, action: Action): InternalState => {
   const { dispatch: baseDispatch } = prevState.getBaseBus();
@@ -28,7 +30,9 @@ type InitialState = { open: boolean };
 
 const convert = (initialState: InitialState) => initialState;
 
-export const useBetaDialogReducer = (initialState: InitialState) => {
+export const useBetaDialogReducer = (
+  initialState: InitialState
+): { state: InternalState; dispatch: Dispatch<PublicAction> } => {
   const baseBusRef = useRef<ReturnType<typeof useDialogBaseReducer>>();
   baseBusRef.current = useDialogBaseReducer({ open: initialState.open });
 

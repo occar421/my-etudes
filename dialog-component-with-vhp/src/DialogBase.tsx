@@ -1,9 +1,11 @@
-import { type ReactNode, useEffect, useReducer, useRef } from "react";
+import { Dispatch, type ReactNode, useEffect, useReducer, useRef } from "react";
 import { createPortal } from "react-dom";
 
 type InternalState = { open: boolean };
 
-type Action = { type: "Show" } | { type: "Close" };
+type PublicAction = { type: "Show" } | { type: "Close" };
+
+type Action = PublicAction;
 
 const reducer = (prevState: InternalState, action: Action): InternalState => {
   switch (action.type) {
@@ -18,7 +20,9 @@ type InitialState = { open: boolean };
 
 const convert = (initialState: InitialState) => initialState;
 
-export const useDialogBaseReducer = (initialState: InitialState) => {
+export const useDialogBaseReducer = (
+  initialState: InitialState
+): { state: InternalState; dispatch: Dispatch<PublicAction> } => {
   const [state, dispatch] = useReducer(reducer, convert(initialState));
 
   return { state, dispatch };

@@ -3,7 +3,7 @@ import {
   useDialogBaseProps,
   useDialogBaseReducer,
 } from "./DialogBase";
-import { useCallback, useReducer, useRef, useState } from "react";
+import { Dispatch, useCallback, useReducer, useRef, useState } from "react";
 import { Bound } from "./Type";
 
 type InternalState = {
@@ -12,11 +12,9 @@ type InternalState = {
   cookieChecked: boolean;
 };
 
-type Action =
-  | { type: "Show" }
-  | { type: "Close" }
-  | { type: "Clear" }
-  | { type: "ToggleCookieChecked" };
+type PublicAction = { type: "Show" } | { type: "Close" } | { type: "Clear" };
+type PrivateAction = { type: "ToggleCookieChecked" };
+type Action = PublicAction | PrivateAction;
 
 const reducer = (prevState: InternalState, action: Action): InternalState => {
   const { dispatch: baseDispatch } = prevState.getBaseBus();
@@ -39,7 +37,9 @@ type InitialState = { open: boolean; cookieChecked: boolean };
 
 const convert = (initialState: InitialState) => initialState;
 
-export const useAlphaDialogReducer = (initialState: InitialState) => {
+export const useAlphaDialogReducer = (
+  initialState: InitialState
+): { state: InternalState; dispatch: Dispatch<PublicAction> } => {
   const baseBusRef = useRef<ReturnType<typeof useDialogBaseReducer>>();
   baseBusRef.current = useDialogBaseReducer({ open: initialState.open });
 
@@ -83,7 +83,7 @@ export const useAlphaDialogProps = (
     onCancel: args.onCancel,
     cookieChecked: state.cookieChecked,
     onChangeCookieChecked: useCallback(() => {
-      dispatch({ type: "ToggleCookieChecked" });
+      dispatch({ type: "ToggleCookieChecked" as any }); // @FIXME private にできない
     }, []),
   };
 };
