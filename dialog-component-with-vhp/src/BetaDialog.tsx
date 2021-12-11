@@ -1,29 +1,43 @@
 import {
   DialogBase,
-  reducerForDialogBase,
   useDialogBaseProps,
+  useDialogBaseReducer,
 } from "./DialogBase";
-import { Dispatch } from "react";
+import { useReducer, useRef } from "react";
 
-type State = {
-  baseState: Parameters<typeof reducerForDialogBase>[0];
+type InternalState = {
+  getBaseBus: () => ReturnType<typeof useDialogBaseReducer>;
 };
 
 type Action = { type: "Show" } | { type: "Close" };
 
-export const reducer = (prevState: State, action: Action): State => {
+const reducer = (prevState: InternalState, action: Action): InternalState => {
+  const { dispatch: baseDispatch } = prevState.getBaseBus();
+
   switch (action.type) {
     case "Show":
-      return {
-        ...prevState,
-        baseState: reducerForDialogBase(prevState.baseState, { type: "Show" }),
-      };
+      baseDispatch({ type: "Show" });
+      return prevState;
     case "Close":
-      return {
-        ...prevState,
-        baseState: reducerForDialogBase(prevState.baseState, { type: "Close" }),
-      };
+      baseDispatch({ type: "Close" });
+      return prevState;
   }
+};
+
+type InitialState = { open: boolean };
+
+const convert = (initialState: InitialState) => initialState;
+
+export const useBetaDialogReducer = (initialState: InitialState) => {
+  const baseBusRef = useRef<ReturnType<typeof useDialogBaseReducer>>();
+  baseBusRef.current = useDialogBaseReducer({ open: initialState.open });
+
+  const [state, dispatch] = useReducer(reducer, {
+    ...convert(initialState),
+    getBaseBus: () => baseBusRef.current!,
+  });
+
+  return { state, dispatch };
 };
 
 type Args = {
@@ -34,23 +48,15 @@ type Props = {
   baseProps: ReturnType<typeof useDialogBaseProps>;
 } & Args;
 
-type Exports = {
-  show: () => void;
-  close: () => void;
-};
-
-export const useBetaDialog = ([{ baseState }]: [
-  State,
-  Dispatch<Action>
-]): Props => {
-  const dialogBase = useDialogBaseProps([baseState]);
+export const useBetaDialogProps = (
+  { state }: ReturnType<typeof useBetaDialogReducer>,
+  args: Args
+): Props => {
+  const baseProps = useDialogBaseProps(state.getBaseBus(), {});
 
   return {
-    props: {
-      baseProps: dialogBase.props,
-      onAccept: args.onAccept,
-    },
-    exports: { show: dialogBase.exports.show, close: dialogBase.exports.close },
+    baseProps,
+    onAccept: args.onAccept,
   };
 };
 

@@ -5,10 +5,7 @@ type InternalState = { open: boolean };
 
 type Action = { type: "Show" } | { type: "Close" };
 
-export const reducer = (
-  prevState: InternalState,
-  action: Action
-): InternalState => {
+const reducer = (prevState: InternalState, action: Action): InternalState => {
   switch (action.type) {
     case "Show":
       return { ...prevState, open: true };
@@ -19,17 +16,10 @@ export const reducer = (
 
 type InitialState = { open: boolean };
 
-const convert = (initialState: InitialState): InternalState => initialState;
+const convert = (initialState: InitialState) => initialState;
 
-export const useDialogBaseReducer = (
-  initializer?: InitialState | (() => InitialState)
-) => {
-  const [state, dispatch] = useReducer(
-    reducer,
-    initializer
-      ? convert(typeof initializer === "function" ? initializer() : initializer)
-      : { open: false }
-  );
+export const useDialogBaseReducer = (initialState: InitialState) => {
+  const [state, dispatch] = useReducer(reducer, convert(initialState));
 
   return { state, dispatch };
 };

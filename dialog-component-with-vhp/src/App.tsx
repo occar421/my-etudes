@@ -1,5 +1,13 @@
-import { AlphaDialog, useAlphaDialog } from "./AlphaDialog";
-import { BetaDialog, useBetaDialog } from "./BetaDialog";
+import {
+  AlphaDialog,
+  useAlphaDialogProps,
+  useAlphaDialogReducer,
+} from "./AlphaDialog";
+import {
+  BetaDialog,
+  useBetaDialogProps,
+  useBetaDialogReducer,
+} from "./BetaDialog";
 import { useCallback } from "react";
 import {
   DialogBase,
@@ -7,33 +15,32 @@ import {
   useDialogBaseReducer,
 } from "./DialogBase";
 
-type AlphaDialogArgs = Required<Parameters<typeof useAlphaDialog>[0]>;
-
 function App() {
-  const onAccept = useCallback<AlphaDialogArgs["onAccept"]>(function () {
+  const alphaBus = useAlphaDialogReducer({ open: false, cookieChecked: false });
+  const onAccept = useCallback(function () {
     console.info("Alpha accepted.");
-    this.close();
+    alphaBus.dispatch({ type: "Close" });
   }, []);
-
-  const alphaDialog = useAlphaDialog({
+  const alphaProps = useAlphaDialogProps(alphaBus, {
     onAccept,
-    onCancel: useCallback<AlphaDialogArgs["onCancel"]>(function () {
+    onCancel: useCallback(function () {
       console.info("Alpha canceled.");
-      this.close();
+      alphaBus.dispatch({ type: "Close" });
     }, []),
   });
 
-  const betaDialog = useBetaDialog({
+  const betaBus = useBetaDialogReducer({ open: false });
+  const betaProps = useBetaDialogProps(betaBus, {
     onAccept: () => {
       console.info("Beta accepted.");
-      betaDialog.exports.close();
+      betaBus.dispatch({ type: "Close" });
     },
   });
 
-  const bus = useDialogBaseReducer();
-  const gammaProps = useDialogBaseProps(bus, {
+  const gammaBus = useDialogBaseReducer({ open: false });
+  const gammaProps = useDialogBaseProps(gammaBus, {
     onClose: () => {
-      bus.dispatch({ type: "Close" });
+      gammaBus.dispatch({ type: "Close" });
     },
   });
 
@@ -44,8 +51,8 @@ function App() {
           type="button"
           className="bg-blue-500 hover:bg-blue-700 transition text-white font-bold py-2 px-4 rounded"
           onClick={() => {
-            alphaDialog.exports.clear();
-            alphaDialog.exports.show();
+            alphaBus.dispatch({ type: "Clear" });
+            alphaBus.dispatch({ type: "Show" });
           }}
         >
           Open Alpha
@@ -54,13 +61,13 @@ function App() {
           type="button"
           className="bg-gray-500 hover:bg-gray-700 transition text-white font-bold py-2 px-4 rounded"
           onClick={() => {
-            betaDialog.exports.show();
+            betaBus.dispatch({ type: "Show" });
           }}
         >
           Open Beta
         </button>
-        <AlphaDialog {...alphaDialog.props} />
-        <BetaDialog {...betaDialog.props} />
+        <AlphaDialog {...alphaProps} />
+        <BetaDialog {...betaProps} />
         <DialogBase {...gammaProps}>γ</DialogBase>
       </div>
     </div>

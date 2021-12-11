@@ -1,6 +1,56 @@
-import { DialogBase, useDialogBase } from "./DialogBase";
-import { useState } from "react";
+import {
+  DialogBase,
+  useDialogBaseProps,
+  useDialogBaseReducer,
+} from "./DialogBase";
+import { useCallback, useReducer, useRef, useState } from "react";
 import { Bound } from "./Type";
+
+type InternalState = {
+  getBaseBus: () => ReturnType<typeof useDialogBaseReducer>;
+  resetState: () => InitialState;
+  cookieChecked: boolean;
+};
+
+type Action =
+  | { type: "Show" }
+  | { type: "Close" }
+  | { type: "Clear" }
+  | { type: "ToggleCookieChecked" };
+
+const reducer = (prevState: InternalState, action: Action): InternalState => {
+  const { dispatch: baseDispatch } = prevState.getBaseBus();
+
+  switch (action.type) {
+    case "Show":
+      baseDispatch({ type: "Show" });
+      return prevState;
+    case "Close":
+      baseDispatch({ type: "Close" });
+      return prevState;
+    case "Clear":
+      return { ...prevState, ...prevState.resetState() };
+    case "ToggleCookieChecked":
+      return { ...prevState, cookieChecked: !prevState.cookieChecked };
+  }
+};
+
+type InitialState = { open: boolean; cookieChecked: boolean };
+
+const convert = (initialState: InitialState) => initialState;
+
+export const useAlphaDialogReducer = (initialState: InitialState) => {
+  const baseBusRef = useRef<ReturnType<typeof useDialogBaseReducer>>();
+  baseBusRef.current = useDialogBaseReducer({ open: initialState.open });
+
+  const [state, dispatch] = useReducer(reducer, {
+    ...convert(initialState),
+    getBaseBus: () => baseBusRef.current!,
+    resetState: () => initialState,
+  });
+
+  return { state, dispatch };
+};
 
 type Args = {
   onAccept?: () => void;
@@ -8,7 +58,7 @@ type Args = {
 };
 
 type Props = {
-  baseProps: ReturnType<typeof useDialogBase>["props"];
+  baseProps: ReturnType<typeof useDialogBaseProps>;
   cookieChecked: boolean;
   onChangeCookieChecked?: () => void;
 } & Args;
@@ -19,32 +69,22 @@ type Exports = {
   clear: () => void;
 };
 
-export const useAlphaDialog = (
+export const useAlphaDialogProps = (
+  { state, dispatch }: ReturnType<typeof useAlphaDialogReducer>,
   args: Bound<Args, Exports>
-): { props: Props; exports: Exports } => {
-  const dialogBase = useDialogBase({ onClose: args.onCancel });
-
-  const [checked, setChecked] = useState(false);
-
-  const exports = {
-    show: dialogBase.exports.show,
-    close: dialogBase.exports.close,
-    clear: () => {
-      setChecked(false);
-    },
-  };
+): Props => {
+  const baseProps = useDialogBaseProps(state.getBaseBus(), {
+    onClose: args.onCancel,
+  });
 
   return {
-    props: {
-      baseProps: dialogBase.props,
-      onAccept: args.onAccept?.bind(exports),
-      onCancel: args.onCancel?.bind(exports),
-      cookieChecked: checked,
-      onChangeCookieChecked: () => {
-        setChecked((x) => !x);
-      },
-    },
-    exports,
+    baseProps,
+    onAccept: args.onAccept,
+    onCancel: args.onCancel,
+    cookieChecked: state.cookieChecked,
+    onChangeCookieChecked: useCallback(() => {
+      dispatch({ type: "ToggleCookieChecked" });
+    }, []),
   };
 };
 
