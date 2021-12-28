@@ -11,9 +11,3 @@ body {
 code {
   @apply font-mono;
 }
-
-@layer utilities {
-  .animate-duration-20s {
-    animation-duration: 20s;
-  }
-}
