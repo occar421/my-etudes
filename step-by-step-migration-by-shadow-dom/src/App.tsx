@@ -4,7 +4,6 @@ import { css, keyframes } from "@emotion/react";
 import Button from "./components/Button";
 import Barrier from "./new-gen/cheats/Barrier";
 import Tooltip from "./new-gen/components/Tooltip";
-import ButtonWithMessage from "./new-gen/components/ButtonWithMessage";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -69,7 +68,6 @@ function App() {
           ) : null}
           {showButton ? (
             /** Section Level Coexistence */
-            // FIXME: NG
             <Barrier>
               <Tooltip message={`count is: ${count}`}>
                 <button
@@ -86,37 +84,11 @@ function App() {
           ) : null}
           {showButton ? (
             <Tooltip message={`count is: ${count}`}>
-              <Barrier>
-                <button
-                  type="button"
-                  css={css`
-                    font-size: calc(10px + 2vmin);
-                  `}
-                  onClick={() => setCount((count) => count + 1)}
-                >
-                  count is: {count}
-                </button>
-              </Barrier>
-            </Tooltip>
-          ) : null}
-          {showButton ? (
-            <Tooltip message={`count is: ${count}`}>
               {/** Component Level Coexistence */}
               <Button onClick={() => setCount((count) => count + 1)}>
                 count is: {count}
               </Button>
             </Tooltip>
-          ) : null}
-          {showButton ? (
-            // FIXME: NG
-            <Barrier>
-              <ButtonWithMessage
-                onClick={() => setCount((count) => count + 1)}
-                message={`count is: ${count}`}
-              >
-                count is: {count}
-              </ButtonWithMessage>
-            </Barrier>
           ) : null}
         </p>
         <p>
