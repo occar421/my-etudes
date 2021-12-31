@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import "./index.css";
+import { css } from "@emotion/react";
 
 type Props = {
   children?: ReactNode;
@@ -8,7 +8,13 @@ type Props = {
 
 function Button({ children, onClick }: Props) {
   return (
-    <button type="button" className="Button" onClick={onClick}>
+    <button
+      type="button"
+      css={css`
+        font-size: calc(10px + 2vmin);
+      `}
+      onClick={onClick}
+    >
       {children}
     </button>
   );
