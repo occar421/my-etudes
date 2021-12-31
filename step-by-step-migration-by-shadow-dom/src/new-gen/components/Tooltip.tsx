@@ -1,10 +1,10 @@
 import { css } from "@emotion/react";
-import { createPortal } from "../cheats/PortalHead";
+import { createPagePortal } from "../cheats/PortalHead";
 
 type Props = { message: string };
 
 function Tooltip({ message }: Props) {
-  return createPortal(
+  return createPagePortal(
     <div
       css={css`
         position: fixed;

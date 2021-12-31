@@ -1,3 +1,3 @@
-import { createPortal } from "./cheats/PortalHead";
+import { createPagePortal } from "./cheats/PortalHead";
 
-export default createPortal;
+export default createPagePortal;

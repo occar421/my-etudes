@@ -1,30 +1,22 @@
 import Barrier from "./Barrier";
 import React, { type ReactNode, type ReactPortal } from "react";
 import { createPortal as reactCreatePortal } from "react-dom";
-import { CacheProvider, css } from "@emotion/react";
+import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 
+const ID = "portal-head";
+
 function PortalHead() {
-  return (
-    <div
-      id="portal-head"
-      css={css`
-        display: contents;
-      `}
-    >
-      <Barrier />
-    </div>
-  );
+  return <Barrier id={ID} />;
 }
 
 export default PortalHead;
 
 function getElement(): HTMLElement {
-  return document.querySelector("#portal-head > *")!
-    .shadowRoot! as unknown as HTMLElement;
+  return document.getElementById(ID)!.shadowRoot! as unknown as HTMLElement;
 }
 
-export function createPortal(children: ReactNode): ReactPortal {
+export function createPagePortal(children: ReactNode): ReactPortal {
   const element = getElement();
 
   let emotionCache = cacheRef?.deref();
