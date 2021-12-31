@@ -2,9 +2,11 @@ import { useState } from "react";
 import logo from "./logo.svg";
 import { css, keyframes } from "@emotion/react";
 import Button from "./components/Button";
+import Barrier from "./Barrier";
 
 function App() {
   const [count, setCount] = useState(0);
+  const [showButton, setShowButton] = useState(true);
 
   return (
     <div
@@ -40,18 +42,47 @@ function App() {
         />
         <p>Hello Vite + React!</p>
         <p>
-          <button
-            type="button"
-            css={css`
-              font-size: calc(10px + 2vmin);
-            `}
-            onClick={() => setCount((count) => count + 1)}
-          >
-            count is: {count}
-          </button>
-          <Button onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </Button>
+          <label>
+            Show Button
+            <input
+              type="checkbox"
+              checked={showButton}
+              onChange={() => setShowButton((x) => !x)}
+            />
+          </label>
+        </p>
+        <p>
+          {showButton ? (
+            <button
+              type="button"
+              css={css`
+                font-size: calc(10px + 2vmin);
+              `}
+              onClick={() => setCount((count) => count + 1)}
+            >
+              count is: {count}
+            </button>
+          ) : null}
+          {showButton ? (
+            /** Section Level Coexistence */
+            <Barrier>
+              <button
+                type="button"
+                css={css`
+                  font-size: calc(10px + 2vmin);
+                `}
+                onClick={() => setCount((count) => count + 1)}
+              >
+                count is: {count}
+              </button>
+            </Barrier>
+          ) : null}
+          {showButton ? (
+            /** Component Level Coexistence */
+            <Button onClick={() => setCount((count) => count + 1)}>
+              count is: {count}
+            </Button>
+          ) : null}
         </p>
         <p>
           Edit <code>App.tsx</code> and save to test HMR updates.
