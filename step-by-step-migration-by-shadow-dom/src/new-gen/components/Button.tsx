@@ -1,14 +1,12 @@
 import { type ReactNode } from "react";
 import { css } from "@emotion/react";
-import Tooltip from "./Tooltip";
 
 type Props = {
-  message?: string;
   children?: ReactNode;
   onClick?: () => void;
 };
 
-function Button({ message, children, onClick }: Props) {
+function Button({ children, onClick }: Props) {
   return (
     <button
       type="button"
@@ -18,7 +16,6 @@ function Button({ message, children, onClick }: Props) {
       onClick={onClick}
     >
       {children}
-      {message ? <Tooltip message={message} /> : null}
     </button>
   );
 }
