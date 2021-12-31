@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import { css, Global } from "@emotion/react";
+import PortalHead from "./new-gen/cheats/PortalHead";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -23,6 +24,7 @@ ReactDOM.render(
       `}
     />
     <App />
+    <PortalHead />
   </React.StrictMode>,
   document.getElementById("root")
 );

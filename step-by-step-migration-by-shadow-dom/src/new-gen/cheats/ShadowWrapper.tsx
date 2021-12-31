@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 import StyleWrapper from "./StyleWrapper";
 
 type Props = {
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 function ShadowWrapper({ children }: Props) {

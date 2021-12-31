@@ -13,7 +13,6 @@ function StyleWrapper({ shadowRoot, children }: Props) {
     emotionCache = createCache({
       key: "barrier",
       container: shadowRoot as unknown as HTMLElement,
-      prepend: true,
     });
     cache.set(shadowRoot, emotionCache);
   }

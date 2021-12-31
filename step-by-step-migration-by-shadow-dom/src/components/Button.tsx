@@ -1,4 +1,4 @@
-import Barrier from "../Barrier";
+import Barrier from "../new-gen/cheats/Barrier";
 import ButtonNewGen from "../new-gen/components/Button";
 import { type ComponentProps } from "react";
 

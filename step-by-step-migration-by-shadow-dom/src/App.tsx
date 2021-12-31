@@ -2,7 +2,8 @@ import { useState } from "react";
 import logo from "./logo.svg";
 import { css, keyframes } from "@emotion/react";
 import Button from "./components/Button";
-import Barrier from "./Barrier";
+import Barrier from "./new-gen/cheats/Barrier";
+import Tooltip from "./new-gen/components/Tooltip";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -74,12 +75,16 @@ function App() {
                 onClick={() => setCount((count) => count + 1)}
               >
                 count is: {count}
+                <Tooltip message={`count is: ${count}`} />
               </button>
             </Barrier>
           ) : null}
           {showButton ? (
             /** Component Level Coexistence */
-            <Button onClick={() => setCount((count) => count + 1)}>
+            <Button
+              onClick={() => setCount((count) => count + 1)}
+              message={`count is: ${count}`}
+            >
               count is: {count}
             </Button>
           ) : null}
