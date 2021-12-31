@@ -1,16 +1,12 @@
-import { type ReactNode } from "react";
-import "./index.css";
+import Barrier from "../new-gen/Barrier";
+import ButtonNewGen from "../new-gen/Button";
+import { type ComponentProps } from "react";
 
-type Props = {
-  children?: ReactNode;
-  onClick?: () => void;
-};
-
-function Button({ children, onClick }: Props) {
+function Button(props: ComponentProps<typeof ButtonNewGen>) {
   return (
-    <button type="button" className="Button" onClick={onClick}>
-      {children}
-    </button>
+    <Barrier>
+      <ButtonNewGen {...props} />
+    </Barrier>
   );
 }
 
