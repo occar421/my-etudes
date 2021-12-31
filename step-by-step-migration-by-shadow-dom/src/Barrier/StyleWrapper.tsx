@@ -1,54 +1,13 @@
-import React, {
-  type ReactNode,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { type ReactNode } from "react";
 import { CacheProvider, css, Global } from "@emotion/react";
-import { createPortal } from "react-dom";
 import createCache from "@emotion/cache";
 
 type Props = {
+  shadowRoot: ShadowRoot;
   children: ReactNode;
 };
 
-function Barrier({ children }: Props) {
-  const baseRef = useRef<HTMLElement>(null);
-
-  const [shadowRoot, setShadowRoot] = useState<ShadowRoot>();
-
-  useLayoutEffect(() => {
-    setShadowRoot(
-      (prev) => prev ?? baseRef.current?.attachShadow({ mode: "open" })
-    );
-  }, []);
-
-  return (
-    <span
-      ref={baseRef}
-      css={css`
-        display: contents;
-      `}
-    >
-      {shadowRoot
-        ? createPortal(
-            <Inner shadowRoot={shadowRoot}>{children}</Inner>,
-            shadowRoot as unknown as Element
-          )
-        : null}
-    </span>
-  );
-}
-
-const cache = new WeakMap<ShadowRoot, ReturnType<typeof createCache>>();
-
-function Inner({
-  shadowRoot,
-  children,
-}: {
-  shadowRoot: ShadowRoot;
-  children: ReactNode;
-}) {
+function StyleWrapper({ shadowRoot, children }: Props) {
   let emotionCache = cache.get(shadowRoot);
   if (!emotionCache) {
     emotionCache = createCache({
@@ -67,7 +26,9 @@ function Inner({
   );
 }
 
-export default Barrier;
+export default StyleWrapper;
+
+const cache = new WeakMap<ShadowRoot, ReturnType<typeof createCache>>();
 
 const theNewCssReset = css`
   /*** The new CSS Reset - version 1.4.4 (last updated 22.12.2021) ***/
