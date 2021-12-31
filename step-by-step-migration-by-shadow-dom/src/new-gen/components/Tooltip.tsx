@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 import { createPagePortal } from "../cheats/PortalHead";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 type Props = { message: string; children: ReactNode };
 
@@ -19,6 +19,19 @@ function Tooltip({ message, children }: Props) {
     return () => observer.disconnect();
   }, []);
 
+  // work
+  useLayoutEffect(() => {
+    const ac = new AbortController();
+    baseRef.current!.addEventListener("mouseenter", () => setHovered(true), {
+      signal: ac.signal,
+    });
+    baseRef.current!.addEventListener("mouseleave", () => setHovered(false), {
+      signal: ac.signal,
+    });
+
+    return () => ac.abort();
+  }, []);
+
   return (
     <>
       <span
@@ -26,10 +39,8 @@ function Tooltip({ message, children }: Props) {
         css={css`
           display: inline-flex;
         `}
-        // work
-        onFocus={() => setHovered(true)}
-        onBlur={() => setHovered(false)}
         // not work
+        // maybe by https://github.com/Wildhoney/ReactShadow/issues/81
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
