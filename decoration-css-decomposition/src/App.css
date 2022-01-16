@@ -30,5 +30,5 @@
 }
 
 button {
-  @apply bg-gray-200 text-black border-gray-500 border-2 text-24px hover:bg-gray-300;
+  @apply bg-gray-200 text-black border-gray-500 border-2 px-2 text-24px hover:bg-gray-300;
 }
