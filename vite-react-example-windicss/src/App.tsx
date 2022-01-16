@@ -14,7 +14,7 @@ function App() {
       >
         <img
           src={logo}
-          className="h-[40vmin] pointer-events-none animate-spin animate-duration-2s motion-reduce:transition-none"
+          className="h-[40vmin] pointer-events-none animate-spin animate-duration-20s motion-reduce:transition-none"
           alt="logo"
         />
         <p>Hello Vite + React!</p>
