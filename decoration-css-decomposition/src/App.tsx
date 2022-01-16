@@ -6,7 +6,7 @@ function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div className="App">
       <header
         style={{
           minHeight: "100vh",
