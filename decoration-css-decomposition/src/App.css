@@ -13,8 +13,7 @@
 }
 
 .App-header {
-  @apply bg-theme-navy text-white;
-  font-size: 24px;
+  @apply bg-theme-navy text-24px text-white;
 }
 
 .App-link {
@@ -31,6 +30,5 @@
 }
 
 button {
-  @apply bg-gray-200 text-black border-gray-500 border-2 hover:bg-gray-300;
-  font-size: 24px;
+  @apply bg-gray-200 text-black border-gray-500 border-2 text-24px hover:bg-gray-300;
 }
