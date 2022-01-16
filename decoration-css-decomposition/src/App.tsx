@@ -6,9 +6,25 @@ function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <div style={{ textAlign: "center" }}>
+      <header
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        className="App-header"
+      >
+        <img
+          src={logo}
+          style={{
+            height: "40vmin",
+          }}
+          className="App-logo"
+          alt="logo"
+        />
         <p>Hello Vite + React!</p>
         <p>
           <button type="button" onClick={() => setCount((count) => count + 1)}>
