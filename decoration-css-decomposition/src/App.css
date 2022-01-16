@@ -13,13 +13,12 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  @apply bg-theme-navy text-white;
   font-size: 24px;
-  color: white;
 }
 
 .App-link {
-  color: #61dafb;
+  @apply text-theme-cyan underline;
 }
 
 @keyframes App-logo-spin {
@@ -32,5 +31,6 @@
 }
 
 button {
+  @apply bg-gray-200 text-black border-gray-500 border-2 hover:bg-gray-300;
   font-size: 24px;
 }
