@@ -2,6 +2,9 @@ import { defineConfig } from "windicss/helpers";
 import colors from "windicss/colors";
 
 export default defineConfig({
+  attributify: {
+    prefix: "w--", // to prevent jsx namespace config error
+  },
   theme: {
     colors: {
       white: colors.white,

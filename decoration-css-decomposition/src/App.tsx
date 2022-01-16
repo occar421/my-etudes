@@ -7,8 +7,14 @@ function App() {
 
   return (
     <div className="App">
-      <header className="min-h-screen flex flex-col items-center justify-center gap-y-48px App-header">
-        <img src={logo} className="h-[40vmin] App-logo" alt="logo" />
+      <header
+        w--min-h="screen"
+        w--flex="~ col" // gap-y-48px after https://github.com/windicss/windicss/issues/582
+        w--align="items-center"
+        w--justify="content-center"
+        className="gap-y-48px App-header"
+      >
+        <img src={logo} w--h="[40vmin]" className="App-logo" alt="logo" />
         <p>Hello Vite + React!</p>
         <p>
           <button type="button" onClick={() => setCount((count) => count + 1)}>
