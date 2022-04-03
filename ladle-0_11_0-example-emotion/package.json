@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "catalog:dev": "ladle serve",
+    "catalog:build": "ladle build"
   },
   "dependencies": {
     "@emotion/react": "^11.8.2",
@@ -13,6 +15,7 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@ladle/react": "^0.11.0",
     "@types/react": "^17.0.33",
     "@types/react-dom": "^17.0.10",
     "@vitejs/plugin-react": "^1.0.7",

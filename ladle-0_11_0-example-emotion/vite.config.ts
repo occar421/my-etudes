@@ -8,8 +8,4 @@ export default defineConfig({
       jsxImportSource: "@emotion/react",
     }),
   ],
-  esbuild: {
-    jsxFactory: "jsx",
-    jsxInject: `import { jsx } from "@emotion/react"`,
-  },
 });
