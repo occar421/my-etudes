@@ -9,7 +9,7 @@ function App() {
       <header className="bg-theme-navy min-h-screen flex flex-col items-center justify-center text-[calc(10px+2vmin)] text-white gap-y-[48px]">
         <img
           src={logo}
-          className="h-[40vmin] pointer-events-none animate-spin [animation-duration:2000ms] motion-reduce:transition-none"
+          className="h-[40vmin] pointer-events-none animate-spin [animation-duration:20s] motion-reduce:transition-none"
           alt="logo"
         />
         <p>Hello Vite + React!</p>
