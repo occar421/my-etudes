@@ -1,14 +1,46 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { useState } from "react";
+import logo from "./logo.svg";
+import { css, keyframes } from "@emotion/react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+    <div
+      css={css`
+        text-align: center;
+
+        button {
+          font-size: calc(10px + 2vmin);
+        }
+      `}
+    >
+      <header
+        css={css`
+          background-color: #282c34;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          font-size: calc(10px + 2vmin);
+          color: white;
+        `}
+      >
+        <img
+          src={logo}
+          css={css`
+            height: 40vmin;
+            pointer-events: none;
+
+            @media (prefers-reduced-motion: no-preference) {
+              & {
+                animation: ${appLogoSpin} infinite 20s linear;
+              }
+            }
+          `}
+          alt="logo"
+        />
         <p>Hello Vite + React!</p>
         <p>
           <button type="button" onClick={() => setCount((count) => count + 1)}>
@@ -20,16 +52,16 @@ function App() {
         </p>
         <p>
           <a
-            className="App-link"
+            css={appLink}
             href="https://reactjs.org"
             target="_blank"
             rel="noopener noreferrer"
           >
             Learn React
           </a>
-          {' | '}
+          {" | "}
           <a
-            className="App-link"
+            css={appLink}
             href="https://vitejs.dev/guide/features.html"
             target="_blank"
             rel="noopener noreferrer"
@@ -39,7 +71,20 @@ function App() {
         </p>
       </header>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
+
+const appLogoSpin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const appLink = css`
+  color: #61dafb;
+`;
