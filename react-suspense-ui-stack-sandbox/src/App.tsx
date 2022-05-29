@@ -6,19 +6,25 @@ import {
   useState,
 } from "react";
 
-const DataGetterContext = createContext<() => string | undefined>(
+const DataGetterContext = createContext<(key: string) => string | undefined>(
   () => undefined
 );
 
-const DataSetterContext = createContext((_: string | undefined) => {});
+const DataSetterContext = createContext((_: string, __: string) => {});
+
+const DataClearContext = createContext(() => {});
 
 const CacheProvider = ({ children }: { children: ReactNode }) => {
-  const [data, setData] = useState<string>();
+  const [dataMap, setDataMap] = useState(new Map<string, string>());
 
   return (
-    <DataGetterContext.Provider value={() => data}>
-      <DataSetterContext.Provider value={(value) => setData(value)}>
-        {children}
+    <DataGetterContext.Provider value={(key) => dataMap.get(key)}>
+      <DataSetterContext.Provider
+        value={(key, value) => dataMap.set(key, value)}
+      >
+        <DataClearContext.Provider value={() => setDataMap(new Map())}>
+          {children}
+        </DataClearContext.Provider>
       </DataSetterContext.Provider>
     </DataGetterContext.Provider>
   );
@@ -43,17 +49,17 @@ export const App = () => {
               onChange={(e) => setDelay(e.target.valueAsNumber)}
             />
           </label>
-          <DataSetterContext.Consumer>
-            {(setter) => (
+          <DataClearContext.Consumer>
+            {(clear) => (
               <button
                 type="button"
                 className="bg-gray-300"
-                onClick={() => setter(undefined)}
+                onClick={() => clear()}
               >
                 Clear cache
               </button>
             )}
-          </DataSetterContext.Consumer>
+          </DataClearContext.Consumer>
         </div>
         <div>
           <Suspense fallback={<div>Initial loading</div>}>
@@ -77,13 +83,13 @@ const sleep = (timeout: number) =>
 export const useData = (cacheKey: string, options: { delay: number }) => {
   const getter = useContext(DataGetterContext);
   const setter = useContext(DataSetterContext);
-  const data = getter();
+  const data = getter(cacheKey);
 
   if (data === undefined) {
     throw Promise.resolve().then(async () => {
       await sleep(options.delay);
 
-      setter("Hello");
+      setter(cacheKey, "Hello");
     });
   }
 
