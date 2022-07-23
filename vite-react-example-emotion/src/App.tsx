@@ -1,82 +1,70 @@
 import { useState } from "react";
-import logo from "./logo.svg";
-import { css, keyframes } from "@emotion/react";
+import reactLogo from "./assets/react.svg";
+import { css, injectGlobal, keyframes } from "@emotion/css";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div
-      css={css`
-        text-align: center;
-
-        button {
-          font-size: calc(10px + 2vmin);
-        }
-      `}
-    >
-      <header
-        css={css`
-          background-color: #282c34;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          font-size: calc(10px + 2vmin);
-          color: white;
-        `}
-      >
-        <img
-          src={logo}
-          css={css`
-            height: 40vmin;
-            pointer-events: none;
-
-            @media (prefers-reduced-motion: no-preference) {
-              & {
-                animation: ${appLogoSpin} infinite 20s linear;
-              }
-            }
-          `}
-          alt="logo"
-        />
-        <p>Hello Vite + React!</p>
+    <div className="App">
+      <div>
+        <a href="https://vitejs.dev" target="_blank" className={anchorStyle}>
+          <img src="/vite.svg" className={logoStyle} alt="Vite logo" />
+        </a>
+        <a href="https://reactjs.org" target="_blank" className={anchorStyle}>
+          <img
+            src={reactLogo}
+            className={`${logoStyle} ${reactLogoStyle}`}
+            alt="React logo"
+          />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className={cardStyle}>
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
         <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
+          Edit <code>src/App.tsx</code> and save to test HMR
         </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            css={appLink}
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {" | "}
-          <a
-            css={appLink}
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      </div>
+      <p className={readTheDocsStyle}>
+        Click on the Vite and React logos to learn more
+      </p>
     </div>
   );
 }
 
 export default App;
 
-const appLogoSpin = keyframes`
+injectGlobal`
+  #root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+  }
+`;
+
+const logoStyle = css`
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+
+  :hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
+  }
+`;
+
+const reactLogoStyle = css`
+  ${logoStyle};
+
+  :hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
+  }
+`;
+
+const logoSpin = keyframes`
   from {
     transform: rotate(0deg);
   }
@@ -85,6 +73,16 @@ const appLogoSpin = keyframes`
   }
 `;
 
-const appLink = css`
-  color: #61dafb;
+const anchorStyle = css`
+  :nth-of-type(2) ${`.${logoStyle}`} {
+    animation: ${logoSpin} infinite 20s linear;
+  }
+`;
+
+const cardStyle = css`
+  padding: 2em;
+`;
+
+const readTheDocsStyle = css`
+  color: #888;
 `;
