@@ -1,6 +1,10 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
-import "./App.css";
+import {
+  componentCss as css,
+  injectGlobal,
+  componentKeyframes as keyframes,
+} from "./style";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -8,15 +12,19 @@ function App() {
   return (
     <div className="App">
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
+        <a href="https://vitejs.dev" target="_blank" className={anchorStyle}>
+          <img src="/vite.svg" className={logoStyle} alt="Vite logo" />
         </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+        <a href="https://reactjs.org" target="_blank" className={anchorStyle}>
+          <img
+            src={reactLogo}
+            className={`${logoStyle} ${reactLogoStyle}`}
+            alt="React logo"
+          />
         </a>
       </div>
       <h1>Vite + React</h1>
-      <div className="card">
+      <div className={cardStyle}>
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
@@ -24,7 +32,7 @@ function App() {
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
-      <p className="read-the-docs">
+      <p className={readTheDocsStyle}>
         Click on the Vite and React logos to learn more
       </p>
     </div>
@@ -32,3 +40,55 @@ function App() {
 }
 
 export default App;
+
+injectGlobal`
+  #root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+  }
+`;
+
+const logoStyle = css`
+  @layer components {
+    height: 6em;
+    padding: 1.5em;
+    will-change: filter;
+
+    :hover {
+      filter: drop-shadow(0 0 2em #646cffaa);
+    }
+  }
+`;
+
+const reactLogoStyle = css`
+  ${logoStyle};
+
+  :hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
+  }
+`;
+
+const logoSpin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const anchorStyle = css`
+  :nth-of-type(2) ${`.${logoStyle}`} {
+    animation: ${logoSpin} infinite 20s linear;
+  }
+`;
+
+const cardStyle = css`
+  padding: 2em;
+`;
+
+const readTheDocsStyle = css`
+  color: #888;
+`;
