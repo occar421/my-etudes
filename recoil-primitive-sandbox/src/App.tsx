@@ -1,7 +1,8 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
-import { atom, selector, useRecoilValue } from "recoil";
+import { BtcUsdRate } from "./BtcUsdRate";
+import { TimeIs } from "./TimeIs";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -17,11 +18,7 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      {count > 0 ? (
-        <p>
-          <RateText />
-        </p>
-      ) : null}
+      <BtcUsdRate />
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
@@ -38,25 +35,3 @@ function App() {
 }
 
 export default App;
-
-const fetchUsdRate = async () => {
-  const res = await fetch("https://api.coindesk.com/v1/bpi/currentprice.json");
-  const data = await res.json();
-  return data.bpi.USD.rate_float as number;
-};
-
-const usdRateState = atom({
-  key: "usdRateState",
-  default: selector({
-    key: "usdRateState/Default",
-    get: () => fetchUsdRate(), // だと最初の読み取り時に取得する。
-  }),
-  // default: fetchUsdRate(), だとファイルの読み込みと同時に取得する。
-  // default: fetchUsdRate, だとそのまま Promise が返る。
-});
-
-const RateText = () => {
-  const rate = useRecoilValue(usdRateState);
-
-  return <span>1 BTC = {rate} USD</span>;
-};
