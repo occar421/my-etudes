@@ -1,4 +1,10 @@
-import { atom, selector, useRecoilValue } from "recoil";
+import {
+  atom,
+  selector,
+  useRecoilValue,
+  useResetRecoilState,
+  useSetRecoilState,
+} from "recoil";
 import { Suspense, useState } from "react";
 import { sleep } from "./sleep";
 
@@ -21,14 +27,24 @@ const usdRateState = atom({
 
 export const BtcUsdRate = () => {
   const [hidden, setHidden] = useState(true);
+  const reset = useResetRecoilState(usdRateState); // キャッシュした "usdRateState/Default" の値でリセット。API からの再取得はしない。
+  const setRate = useSetRecoilState(usdRateState);
 
   return (
     <div>
       <h2>Default atom value</h2>
-      <button onClick={() => setHidden(false)}>Show</button>
-      <p>
-        <Suspense fallback="Loading...">{!hidden ? <Inner /> : null}</Suspense>
-      </p>
+      <button onClick={() => setHidden(false)} disabled={!hidden}>
+        Show
+      </button>
+      <button onClick={() => reset()} disabled={hidden}>
+        Update
+      </button>
+      <button onClick={() => setRate((x) => x + 1)} disabled={hidden}>
+        Increment
+      </button>
+      <Suspense fallback={<p>Loading...</p>}>
+        {!hidden ? <Inner /> : null}
+      </Suspense>
     </div>
   );
 };
@@ -36,5 +52,5 @@ export const BtcUsdRate = () => {
 const Inner = () => {
   const rate = useRecoilValue(usdRateState);
 
-  return <>1 BTC = {rate} USD</>;
+  return <p>1 BTC = {rate} USD</p>;
 };
