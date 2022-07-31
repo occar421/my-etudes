@@ -1,12 +1,6 @@
-import {
-  atomFamily,
-  selectorFamily,
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from "recoil";
+import { selectorFamily, useRecoilCallback, useRecoilValue } from "recoil";
 import { Suspense, useRef } from "react";
+import { fetchersMap } from "./fetchers-map";
 
 export const RecoilQueryProto = () => {
   const qc = useQueryClient();
@@ -31,10 +25,13 @@ export const RecoilQueryProto = () => {
 const Inner = () => {
   const { data } = useQuery(
     "a",
-    () =>
-      fetch("https://worldtimeapi.org/api/timezone/Asia/Tokyo").then<{
-        datetime: string;
-      }>((r) => r.json()),
+    async () => {
+      const res = await fetch(
+        "https://worldtimeapi.org/api/timezone/Asia/Tokyo"
+      );
+      const data = await res.json();
+      return data as { datetime: string };
+    },
     { map: (obj) => new Date(obj.datetime) }
   );
 
@@ -46,11 +43,9 @@ const useQuery = <TD, TR>(
   fetcher: () => Promise<TD>,
   { map }: { map?: (data: TD) => TR }
 ) => {
-  // @FIXME https://github.com/facebookexperimental/Recoil/issues/439
-  const setFetcher = useSetRecoilState(fetcherState(key));
   const prevKey = useRef<string>();
   if (prevKey.current !== key) {
-    setFetcher(fetcher);
+    fetchersMap.set(key, fetcher);
   }
   prevKey.current = key;
 
@@ -59,18 +54,9 @@ const useQuery = <TD, TR>(
   return { data: (map?.(payload) ?? payload) as TR };
 };
 
-const fetcherState = atomFamily<() => Promise<unknown>, string>({
-  key: "fetcherState",
-});
-
 const cacheState = selectorFamily({
   key: "cacheState",
-  get:
-    (key: string) =>
-    ({ get }) => {
-      const fetchers = get(fetcherState(key));
-      return fetchers();
-    },
+  get: (key: string) => () => fetchersMap.get(key)!(),
 });
 
 const useQueryClient = () => {
