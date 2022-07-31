@@ -3,6 +3,7 @@ import reactLogo from "./assets/react.svg";
 import "./App.css";
 import { BtcUsdRate } from "./BtcUsdRate";
 import { TimeIs } from "./TimeIs";
+import { RecoilQueryProto } from "./RecoilQueryProto";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -20,6 +21,7 @@ function App() {
       <h1>Vite + React</h1>
       <BtcUsdRate />
       <TimeIs />
+      <RecoilQueryProto />
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
