@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { selectorFamily, useRecoilCallback, useRecoilValue } from "recoil";
 
 export const useQuery = <TD, TR>(
@@ -6,14 +5,9 @@ export const useQuery = <TD, TR>(
   fetcher: () => Promise<TD>,
   { map }: { map?: (data: TD) => TR }
 ) => {
-  const prevKey = useRef<string>();
-  if (prevKey.current !== key) {
-    fetchersMap.set(key, fetcher);
-  }
-  prevKey.current = key;
+  fetchersMap.set(key, fetcher);
 
   const payload = useRecoilValue(cacheState(key)) as TD;
-
   return { data: (map?.(payload) ?? payload) as TR };
 };
 
