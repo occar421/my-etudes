@@ -8,9 +8,11 @@ import { sleep } from "./sleep";
 
 export const TimeIs = () => {
   const [contentHidden, setContentHidden] = useState(true);
+  const [anotherContentHidden, setAnotherContentHidden] = useState(true);
   const [pending, startTransition] = useTransition();
   const refreshTime = useRecoilRefresher_UNSTABLE(tokyoDateTimeState);
   const buttonDisabled = contentHidden || pending;
+  const anotherButtonDisabled = anotherContentHidden || pending;
 
   return (
     <div>
@@ -22,6 +24,9 @@ export const TimeIs = () => {
         >
           Show
         </button>
+        <button onClick={() => setAnotherContentHidden((x) => !x)}>
+          {!anotherContentHidden ? "Show" : "Hide"} another
+        </button>
         <button onClick={refreshTime} disabled={buttonDisabled}>
           Update
         </button>
@@ -29,10 +34,13 @@ export const TimeIs = () => {
           onClick={() => startTransition(refreshTime)}
           disabled={buttonDisabled}
         >
-          Update Silently
+          Update silently
         </button>
         <Suspense fallback={<p>Loading...</p>}>
           {!contentHidden ? <Content /> : null}
+        </Suspense>
+        <Suspense fallback={<p>Loading...</p>}>
+          {!anotherContentHidden ? <Content /> : null}
         </Suspense>
       </div>
     </div>
