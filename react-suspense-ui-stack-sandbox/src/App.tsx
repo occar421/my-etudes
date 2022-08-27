@@ -1,4 +1,5 @@
 import {
+  Component,
   createContext,
   ReactNode,
   Suspense,
@@ -98,7 +99,13 @@ export const App = () => {
                 </Wall>
               }
             >
-              <LoadData cacheKey={cacheKey} delay={delay} />
+              <ErrorBoundary fallback={<div>Error!</div>}>
+                <LoadData
+                  cacheKey={cacheKey}
+                  delay={delay}
+                  injectedError={new Error("aaa")}
+                />
+              </ErrorBoundary>
             </Suspense>
             {nextLoading ? (
               <Wall>
@@ -125,14 +132,38 @@ const Spinner = () => (
   <div className="animate-spin h-8 w-8 border-4 border-gray-300 rounded-full border-t-transparent" />
 );
 
+class ErrorBoundary extends Component<
+  { fallback?: ReactNode; children: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { fallback?: ReactNode; children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+
+    return this.props.children;
+  }
+}
+
 const LoadData = ({
   cacheKey,
   delay = 1000,
+  injectedError,
 }: {
   cacheKey: string;
   delay?: number;
+  injectedError?: Error;
 }) => {
-  const data = useData(cacheKey, { delay });
+  const data = useData(cacheKey, { delay, injectedError });
 
   return (
     <ul className="border border-gray-500">
@@ -148,16 +179,24 @@ const LoadData = ({
 const sleep = (timeout: number) =>
   new Promise((resolve) => setTimeout(resolve, timeout));
 
-export const useData = (cacheKey: string, options: { delay: number }) => {
+export const useData = (
+  cacheKey: string,
+  options: { delay: number; injectedError?: Error }
+) => {
   const getter = useContext(DataGetterContext);
   const setter = useContext(DataSetterContext);
   const data = getter(cacheKey);
 
   if (data === undefined) {
-    throw Promise.resolve().then(async () => {
+    throw new Promise(async (resolve, reject) => {
       await sleep(options.delay);
 
-      setter(cacheKey, "Hello");
+      if (options.injectedError) {
+        reject(options.injectedError);
+      } else {
+        setter(cacheKey, "Hello");
+        resolve(undefined);
+      }
     });
   }
 
