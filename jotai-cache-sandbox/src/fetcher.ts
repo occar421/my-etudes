@@ -1,6 +1,4 @@
-const sleep = async (ms: number) => {
-  await new Promise((resolve) => setTimeout(resolve, ms));
-};
+import { sleep } from "./util";
 
 export const fetchTime = async () => {
   const res = await fetch(`https://worldtimeapi.org/api/timezone/Asia/Tokyo`);
