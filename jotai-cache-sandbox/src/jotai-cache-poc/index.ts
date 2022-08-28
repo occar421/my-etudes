@@ -1,7 +1,8 @@
 import { atomWithQuery } from "jotai/query";
 import { Atom, atom } from "jotai";
-import { atomWithDefault } from "jotai/utils";
+import { atomWithDefault, RESET } from "jotai/utils";
 import { globalJotaiStore } from "../util";
+
 export { useSetAtom as useRefresher } from "jotai";
 export { useMutation } from "@tanstack/react-query";
 
@@ -28,10 +29,10 @@ export const atomWithOptimisticState = <T>(baseAtom: Atom<T>) => {
 
   globalJotaiStore.sub(baseAtom, () => {
     const newValue = globalJotaiStore.get(baseAtom);
-    if (!newValue) {
-      return;
-    }
-    globalJotaiStore.set(optimisticValueAtom, newValue as unknown as T);
+    globalJotaiStore.set(
+      optimisticValueAtom,
+      newValue === undefined ? RESET : (newValue as unknown as T)
+    );
   });
 
   return optimisticValueAtom;
