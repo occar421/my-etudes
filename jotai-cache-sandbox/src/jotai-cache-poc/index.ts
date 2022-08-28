@@ -23,7 +23,7 @@ export const atomWithCache = <TQueryFnData>(
   );
 };
 
-export const atomWithOptimistic = <T>(baseAtom: Atom<T>) => {
+export const atomWithOptimisticState = <T>(baseAtom: Atom<T>) => {
   const optimisticValueAtom = atomWithDefault((get) => get(baseAtom));
 
   globalJotaiStore.sub(baseAtom, () => {

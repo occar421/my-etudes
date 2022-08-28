@@ -1,20 +1,20 @@
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import {
   atomWithCache,
-  atomWithOptimistic,
+  atomWithOptimisticState,
   useMutation,
   useRefresher,
 } from "./jotai-cache-poc";
 import { fetchTime, updateLocation } from "./fetcher";
+import { Suspense } from "react";
 
 const timeAtom = atomWithCache(fetchTime);
 
-const timeOptimisticAtom = atomWithOptimistic(timeAtom);
+const timeOptimisticAtom = atomWithOptimisticState(timeAtom);
 
 export const GetTime = () => {
-  const time = useAtomValue(timeAtom);
   const refreshTime = useRefresher(timeAtom);
-  const [optimisticTime, setOptimisticTime] = useAtom(timeOptimisticAtom);
+  const setOptimisticTime = useSetAtom(timeOptimisticAtom);
 
   const { mutate: mutateLocation, isLoading } = useMutation(updateLocation, {
     onMutate: () => {
@@ -27,12 +27,12 @@ export const GetTime = () => {
 
   return (
     <div>
-      <p>
-        Tokyo: <time>{time.datetime}</time>
-      </p>
-      <p>
-        Optimistic Tokyo: <time>{optimisticTime.datetime}</time>
-      </p>
+      <Suspense fallback={<p>Loading 1</p>}>
+        <GetTime1 />
+      </Suspense>
+      <Suspense fallback={<p>Loading 2</p>}>
+        <GetTime2 />
+      </Suspense>
       <button
         type="button"
         onClick={() => mutateLocation()}
@@ -41,5 +41,25 @@ export const GetTime = () => {
         Invalidate
       </button>
     </div>
+  );
+};
+
+const GetTime1 = () => {
+  const time = useAtomValue(timeAtom);
+
+  return (
+    <p>
+      Tokyo: <time>{time.datetime}</time>
+    </p>
+  );
+};
+
+const GetTime2 = () => {
+  const optimisticTime = useAtomValue(timeOptimisticAtom);
+
+  return (
+    <p>
+      Optimistic Tokyo: <time>{optimisticTime.datetime}</time>
+    </p>
   );
 };
