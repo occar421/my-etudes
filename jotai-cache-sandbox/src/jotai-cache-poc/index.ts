@@ -1,4 +1,5 @@
 import { atomWithQuery } from "jotai/query";
+export { useMutation } from "@tanstack/react-query";
 
 let count = 0;
 
