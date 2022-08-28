@@ -1,14 +1,15 @@
-import { useAtom } from "jotai";
-import { atomWithCache, useMutation } from "./jotai-cache-poc";
+import { useAtomValue } from "jotai";
+import { atomWithCache, useMutation, useRefresher } from "./jotai-cache-poc";
 import { fetchTime, updateLocation } from "./fetcher";
 
 const timeAtom = atomWithCache(fetchTime);
 
 export const GetTime = () => {
-  const [time, setTime] = useAtom(timeAtom);
+  const time = useAtomValue(timeAtom);
+  const refreshTime = useRefresher(timeAtom);
   const { mutate: mutateLocation, isLoading } = useMutation(updateLocation, {
     onSettled: () => {
-      setTime({ type: "refetch" });
+      refreshTime();
     },
   });
 
