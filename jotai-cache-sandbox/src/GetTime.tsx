@@ -1,5 +1,5 @@
 import { atomWithQuery } from "jotai/query";
-import { useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 
 const fetchTime = async () => {
   const res = await fetch(`https://worldtimeapi.org/api/timezone/Asia/Tokyo`);
@@ -12,13 +12,16 @@ const timeAtom = atomWithQuery(() => ({
 }));
 
 export const GetTime = () => {
-  const res = useAtomValue(timeAtom);
+  const [time, setTime] = useAtom(timeAtom);
 
   return (
     <div>
       <p>
-        Tokyo: <time>{res.datetime}</time>
+        Tokyo: <time>{time.datetime}</time>
       </p>
+      <button type="button" onClick={() => setTime({ type: "refetch" })}>
+        Invalidate
+      </button>
     </div>
   );
 };
