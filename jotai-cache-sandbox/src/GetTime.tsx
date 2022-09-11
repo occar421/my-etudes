@@ -1,9 +1,8 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   atomWithCache,
-  atomWithOptimisticState,
+  atomWithOptimisticUpdate,
   useMutation,
-  useRefresher,
 } from "./jotai-cache-poc";
 import { fetchTime, updateLocation } from "./fetcher";
 import { Suspense, useState, useTransition } from "react";
@@ -11,10 +10,10 @@ import { globalStore } from "./util";
 
 const timeAtom = atomWithCache(fetchTime);
 
-const timeOptimisticAtom = atomWithOptimisticState(timeAtom, globalStore);
+const timeOptimisticAtom = atomWithOptimisticUpdate(timeAtom, globalStore);
 
 export const GetTime = () => {
-  const refreshTime = useRefresher(timeAtom);
+  const refreshTime = useSetAtom(timeAtom);
   const setOptimisticTime = useSetAtom(timeOptimisticAtom);
   const [transitionEnabled, setTransitionEnabled] = useState(false);
   const [transitioning, startTransition] = useTransition();

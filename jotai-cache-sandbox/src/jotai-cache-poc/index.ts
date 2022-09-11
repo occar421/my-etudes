@@ -1,8 +1,6 @@
 import { atomWithQuery } from "jotai/query";
 import { Atom, unstable_createStore } from "jotai";
-import { atomWithDefault, RESET } from "jotai/utils";
-
-export { useSetAtom as useRefresher } from "jotai";
+import { atomWithDefault } from "jotai/utils";
 export { useMutation } from "@tanstack/react-query";
 
 let count = 0;
@@ -15,7 +13,7 @@ export const atomWithCache = <TQueryFnData>(
     queryFn: fetcher,
   }));
 
-export const atomWithOptimisticState = <T>(
+export const atomWithOptimisticUpdate = <T>(
   baseAtom: Atom<T>,
   store: ReturnType<typeof unstable_createStore>
 ) => {
@@ -23,10 +21,10 @@ export const atomWithOptimisticState = <T>(
 
   store.sub(baseAtom, () => {
     const newValue = store.get(baseAtom);
-    store.set(
-      optimisticValueAtom,
-      newValue === undefined ? RESET : (newValue as unknown as T)
-    );
+
+    if (newValue !== undefined) {
+      store.set(optimisticValueAtom, newValue as unknown as T);
+    }
   });
 
   return optimisticValueAtom;
