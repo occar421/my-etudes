@@ -1,5 +1,5 @@
 import { atomWithQuery } from "jotai/query";
-import { Atom, atom } from "jotai";
+import { Atom } from "jotai";
 import { atomWithDefault, RESET } from "jotai/utils";
 import { globalJotaiStore } from "../util";
 
@@ -10,19 +10,11 @@ let count = 0;
 
 export const atomWithCache = <TQueryFnData>(
   fetcher: () => Promise<TQueryFnData>
-) => {
-  const core = atomWithQuery(() => ({
+) =>
+  atomWithQuery(() => ({
     queryKey: [count++], // fake
     queryFn: fetcher,
   }));
-
-  return atom<TQueryFnData, unknown>(
-    (get) => get(core),
-    (_, set) => {
-      set(core, { type: "refetch" });
-    }
-  );
-};
 
 export const atomWithOptimisticState = <T>(baseAtom: Atom<T>) => {
   const optimisticValueAtom = atomWithDefault((get) => get(baseAtom));

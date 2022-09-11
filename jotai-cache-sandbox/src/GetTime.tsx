@@ -25,10 +25,10 @@ export const GetTime = () => {
     onSettled: () => {
       if (transitionEnabled) {
         startTransition(() => {
-          refreshTime();
+          refreshTime({ type: "refetch" });
         });
       } else {
-        refreshTime();
+        refreshTime({ type: "refetch" });
       }
     },
   });
