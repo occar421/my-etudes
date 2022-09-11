@@ -1,12 +1,9 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import {
-  atomWithCache,
-  atomWithOptimisticUpdate,
-  useMutation,
-} from "./jotai-cache-poc";
+import { atomWithCache, useMutation } from "./jotai-cache-poc";
 import { fetchTime, updateLocation } from "./fetcher";
 import { Suspense, useState, useTransition } from "react";
 import { globalStore } from "./util";
+import { atomWithOptimisticUpdate } from "./jotai-optimistic-update";
 
 const timeAtom = atomWithCache(fetchTime);
 
