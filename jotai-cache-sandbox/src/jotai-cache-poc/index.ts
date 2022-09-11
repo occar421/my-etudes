@@ -1,7 +1,6 @@
 import { atomWithQuery } from "jotai/query";
-import { atom, useAtomValue, WritableAtom } from "jotai";
-import { useState } from "react";
-import { useAtomCallback } from "jotai/utils";
+import { atom, WritableAtom } from "jotai";
+import { useMemo } from "react";
 
 let count = 0;
 
@@ -31,24 +30,34 @@ export const atomWithMutation = (mutate: () => Promise<void>) => {
   );
 };
 
-export const useAtomWithStatus = <T, U>(
-  atom: WritableAtom<T, U>,
+export const useAtomGeneratorWithStatus = <U>(
+  targetAtom: WritableAtom<StandardStatus, U>,
   params: {
     onMutate?: (args: U) => Promise<void>;
     onSettled?: () => Promise<void>;
   } = {}
-) => {
-  const [status, setStatus] = useState<StandardStatus>("idle");
-  const callback = useAtomCallback(async (get, set, args: U) => {
-    try {
-      setStatus("loading");
-      await params.onMutate?.(args);
+): WritableAtom<StandardStatus, U> =>
+  useMemo(() => {
+    const localStatusAtom = atom<StandardStatus>("idle");
 
-      await set(atom, args);
-    } finally {
-      await params.onSettled?.();
-      setStatus("idle");
-    }
-  });
-  return [useAtomValue(atom), callback, status] as const;
-};
+    return atom(
+      (get) => {
+        const localStatus = get(localStatusAtom);
+        const targetStatus = get(targetAtom);
+        return localStatus === "loading" || targetStatus === "loading"
+          ? "loading"
+          : "idle";
+      },
+      async (get, set, args: U) => {
+        try {
+          set(localStatusAtom, "loading");
+          await params.onMutate?.(args);
+
+          await set(targetAtom, args);
+        } finally {
+          await params.onSettled?.();
+          set(localStatusAtom, "idle");
+        }
+      }
+    );
+  }, []);

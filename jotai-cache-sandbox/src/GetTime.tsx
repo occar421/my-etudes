@@ -1,8 +1,8 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   atomWithCache,
   atomWithMutation,
-  useAtomWithStatus,
+  useAtomGeneratorWithStatus,
 } from "./jotai-cache-poc";
 import { fetchTime, updateLocation } from "./fetcher";
 import { Suspense, useState, useTransition } from "react";
@@ -10,7 +10,7 @@ import { globalStore } from "./util";
 import { atomWithOptimisticUpdate } from "./jotai-optimistic-update";
 
 const timeAtom = atomWithCache(fetchTime);
-const locationMutationAtom = atomWithMutation(updateLocation);
+const locationMutationCoreAtom = atomWithMutation(updateLocation);
 
 const timeOptimisticAtom = atomWithOptimisticUpdate(timeAtom, globalStore);
 
@@ -20,20 +20,24 @@ export const GetTime = () => {
   const [transitionEnabled, setTransitionEnabled] = useState(false);
   const [transitioning, startTransition] = useTransition();
 
-  const [, mutateLocation, status] = useAtomWithStatus(locationMutationAtom, {
-    onMutate: async () => {
-      setOptimisticTime({ datetime: `"Optimistic value"` });
-    },
-    onSettled: async () => {
-      if (transitionEnabled) {
-        startTransition(() => {
-          refreshTime({ type: "refetch" });
-        });
-      } else {
-        await refreshTime({ type: "refetch" });
-      }
-    },
-  });
+  const locationMutationAtom = useAtomGeneratorWithStatus(
+    locationMutationCoreAtom,
+    {
+      onMutate: async () => {
+        setOptimisticTime({ datetime: `"Optimistic value"` });
+      },
+      onSettled: async () => {
+        if (transitionEnabled) {
+          startTransition(() => {
+            refreshTime({ type: "refetch" });
+          });
+        } else {
+          await refreshTime({ type: "refetch" });
+        }
+      },
+    }
+  );
+  const [status, mutateLocation] = useAtom(locationMutationAtom);
 
   return (
     <div style={{ color: transitioning ? "gray" : "inherit" }}>
