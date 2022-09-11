@@ -4,4 +4,4 @@ export const sleep = async (ms: number) => {
   await new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const globalJotaiStore = unstable_createStore();
+export const globalStore = unstable_createStore();

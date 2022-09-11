@@ -7,10 +7,11 @@ import {
 } from "./jotai-cache-poc";
 import { fetchTime, updateLocation } from "./fetcher";
 import { Suspense, useState, useTransition } from "react";
+import { globalStore } from "./util";
 
 const timeAtom = atomWithCache(fetchTime);
 
-const timeOptimisticAtom = atomWithOptimisticState(timeAtom);
+const timeOptimisticAtom = atomWithOptimisticState(timeAtom, globalStore);
 
 export const GetTime = () => {
   const refreshTime = useRefresher(timeAtom);
