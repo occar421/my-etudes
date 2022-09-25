@@ -1,42 +1,28 @@
-import { ReactNode, useLayoutEffect, useRef } from "react";
-import { createRoot } from "react-dom/client";
-
-class BarrierElement extends HTMLElement {
-  constructor() {
-    super();
-
-    const internals = this.attachInternals();
-    console.log(internals.shadowRoot);
-
-    this.attachShadow();
-
-    const mountPoint = document.createElement("span");
-    this.shadowRoot?.appendChild(mountPoint);
-
-    const root = createRoot(mountPoint);
-    root.render(
-      <template shadowroot="open">
-        <p>aaaa</p>
-        <slot></slot>
-        <p>bbbb</p>
-      </template>
-    );
-  }
-}
-
-customElements.define("x-barrier", BarrierElement);
+import { ReactNode, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 export const Barrier = ({ children }: { children: ReactNode }) => {
-  // const baseRef = useRef<HTMLTemplateElement>(null);
-  //
-  // useLayoutEffect(() => {
-  //   const template = baseRef.current;
-  //   if (!template) {
-  //     return;
-  //   }
-  //
-  //   template.shadowRoot?.appendChild(template.content.cloneNode(true));
-  // }, []);
+  const baseRef = useRef<HTMLDivElement>(null);
 
-  return <x-barrier>{children}</x-barrier>;
+  const [shadowRoot, setShadowRoot] = useState<HTMLElement>();
+
+  // failure 手動の Shadow DOM よりもひどい書き味
+  useLayoutEffect(() => {
+    const fragment = new DOMParser().parseFromString(
+      `<div style="display: contents"><template shadowroot="open"><slot></slot></template></div>`,
+      "text/html",
+      { includeShadowRoots: true }
+    );
+
+    const div = fragment.querySelector("div")!;
+
+    setShadowRoot(div.shadowRoot as unknown as HTMLElement);
+    baseRef.current?.appendChild(div);
+  }, []);
+
+  return (
+    <div ref={baseRef} style={{ display: "contents" }}>
+      {shadowRoot ? createPortal(<span>{children}</span>, shadowRoot) : null}
+    </div>
+  );
 };
