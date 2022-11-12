@@ -1,16 +1,16 @@
-import { atomWithQuery } from "jotai/query";
 import { atom, WritableAtom } from "jotai";
 import { useMemo } from "react";
+import { atomsWithQuery } from "jotai-tanstack-query";
 
 let count = 0;
 
 export const atomWithCache = <TQueryFnData>(
   fetcher: () => Promise<TQueryFnData>
 ) =>
-  atomWithQuery(() => ({
+  atomsWithQuery(() => ({
     queryKey: [count++], // fake
     queryFn: fetcher,
-  }));
+  }))[0];
 
 export type StandardStatus = "idle" | "loading";
 
