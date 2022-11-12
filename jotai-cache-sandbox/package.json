@@ -9,18 +9,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tanstack/query-core": "^4.2.3",
-    "@tanstack/react-query": "^4.2.3",
-    "jotai": "^1.8.1",
+    "@tanstack/query-core": "^4.14.5",
+    "@tanstack/react-query": "^4.14.6",
+    "jotai": "^1.9.2",
+    "jotai-tanstack-query": "^0.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
-    "@vitejs/plugin-react": "^2.0.1",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.8",
+    "@vitejs/plugin-react": "^2.2.0",
     "prettier": "^2.7.1",
-    "typescript": "^4.6.4",
-    "vite": "^3.0.7"
+    "typescript": "^4.8.4",
+    "vite": "^3.2.3"
   }
 }
