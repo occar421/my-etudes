@@ -1,14 +1,11 @@
-import {
-  atomsWithQuery as _atomsWithQuery,
-  atomsWithMutation as _atomsWithMutation,
-} from "jotai-tanstack-query";
+import { atomsWithQuery, atomsWithMutation } from "jotai-tanstack-query";
 import type { Getter } from "jotai";
 import type {
   MutationObserverOptions,
   QueryObserverOptions,
 } from "@tanstack/query-core";
 
-export const atomsWithCache = <
+export const atomWithCache = <
   TQueryFnData = unknown,
   TError = unknown,
   TData = TQueryFnData,
@@ -28,14 +25,14 @@ export const atomsWithCache = <
     "queryFn" | "queryKey"
   >
 ) =>
-  _atomsWithQuery((get) => ({
+  atomsWithQuery((get) => ({
     suspense: true,
     useErrorBoundary: true,
     ...getOptions?.(get),
     queryFn: fetcher,
-  }));
+  }))[0];
 
-export const atomsWithMutation = <
+export const atomWithMutation = <
   TData = unknown,
   TError = unknown,
   TVariables = void,
@@ -51,8 +48,8 @@ export const atomsWithMutation = <
     get: Getter
   ) => MutationObserverOptions<TData, TError, TVariables, TContext>
 ) =>
-  _atomsWithMutation((get) => ({
+  atomsWithMutation((get) => ({
     useErrorBoundary: true,
     ...getOptions?.(get),
     mutationFn: mutate,
-  }));
+  }))[1];
