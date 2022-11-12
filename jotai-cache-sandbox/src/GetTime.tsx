@@ -1,16 +1,12 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import {
-  atomWithCache,
-  atomWithMutation,
-  useAtomGeneratorWithStatus,
-} from "./jotai-cache-poc";
+import { atomsWithCache, atomsWithMutation } from "./jotai-cache-poc";
 import { fetchTime, updateLocation } from "./fetcher";
 import { Suspense, useState, useTransition } from "react";
 import { globalStore } from "./util";
 import { atomWithOptimisticUpdate } from "./jotai-optimistic-update";
 
-const timeAtom = atomWithCache(fetchTime);
-const locationMutationCoreAtom = atomWithMutation(updateLocation);
+const [timeAtom] = atomsWithCache(fetchTime);
+const [, locationMutationAtom] = atomsWithMutation(updateLocation);
 
 const timeOptimisticAtom = atomWithOptimisticUpdate(timeAtom, globalStore);
 
@@ -20,12 +16,12 @@ export const GetTime = () => {
   const [transitionEnabled, setTransitionEnabled] = useState(false);
   const [transitioning, startTransition] = useTransition();
 
-  const locationMutationAtom = useAtomGeneratorWithStatus(
-    locationMutationCoreAtom,
-    {
-      onMutate: async () => {
-        setOptimisticTime({ datetime: `"Optimistic value"` });
-      },
+  const [{ mutate: mutateLocationCore, status: mutateLocationStatus }] =
+    useAtom(locationMutationAtom);
+  const mutateLocation = async () => {
+    setOptimisticTime({ datetime: `"Optimistic value"` });
+
+    await mutateLocationCore(undefined, {
       onSettled: async () => {
         if (transitionEnabled) {
           startTransition(() => {
@@ -35,9 +31,8 @@ export const GetTime = () => {
           await refreshTime({ type: "refetch" });
         }
       },
-    }
-  );
-  const [status, mutateLocation] = useAtom(locationMutationAtom);
+    });
+  };
 
   return (
     <div style={{ color: transitioning ? "gray" : "inherit" }}>
@@ -55,7 +50,7 @@ export const GetTime = () => {
       <button
         type="button"
         onClick={() => mutateLocation()}
-        disabled={status === "loading"}
+        disabled={mutateLocationStatus === "loading"}
       >
         Invalidate
       </button>
