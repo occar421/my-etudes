@@ -15,21 +15,21 @@ export const atomWithCache = <
     TQueryFnData,
     TError,
     TData,
-    TQueryData,
-    unknown[]
+    TQueryData
   >["queryFn"],
   getOptions?: (
     get: Getter
   ) => Omit<
-    QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, unknown[]>,
+    QueryObserverOptions<TQueryFnData, TError, TData, TQueryData>,
     "queryFn" | "queryKey"
   >
 ) =>
-  atomsWithQuery((get) => ({
+  atomsWithQuery<TQueryFnData, TError, TData, TQueryData>((get) => ({
     suspense: true,
     useErrorBoundary: true,
-    ...getOptions?.(get),
+    ...(getOptions?.(get) as any),
     queryFn: fetcher,
+    queryKey: [],
   }))[0];
 
 export const atomWithMutation = <
@@ -48,7 +48,7 @@ export const atomWithMutation = <
     get: Getter
   ) => MutationObserverOptions<TData, TError, TVariables, TContext>
 ) =>
-  atomsWithMutation((get) => ({
+  atomsWithMutation<TData, TError, TVariables, TContext>((get) => ({
     useErrorBoundary: true,
     ...getOptions?.(get),
     mutationFn: mutate,

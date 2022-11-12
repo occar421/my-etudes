@@ -1,4 +1,4 @@
-import { Atom, unstable_createStore } from "jotai";
+import type { Atom, unstable_createStore } from "jotai";
 import { atomWithDefault } from "jotai/utils";
 
 export const atomWithOptimisticUpdate = <T>(
