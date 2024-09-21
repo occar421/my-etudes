@@ -4,6 +4,5 @@ import {useState} from "react";
 
 export default function Editor() {
   const [test, setTest] = useState();
-  return <summary>This is editor and have fun!</summary>;
-  // return "This is editor and have fun!";
+  return <summary>This is linter and clean it!</summary>;
 }
