@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "serve:module": "serve modules/ -p 5000"
   },
   "dependencies": {
     "next": "^15.0.0-canary.161",
@@ -19,6 +20,7 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.13",
-    "typescript": "^5"
+    "typescript": "^5",
+    "serve": "^14"
   }
 }
