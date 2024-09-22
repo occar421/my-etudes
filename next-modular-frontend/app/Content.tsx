@@ -4,13 +4,18 @@ import styles from "@/app/page.module.css";
 import {Counter} from "@/app/Counter";
 import {ReactNode} from "react";
 
-export default function Content({context}: { context: { Clock: ReactNode, EditorModule: ReactNode } }) {
+type ServerComponents = "Clock" | "EditorModule" | "LinterModule";
+
+export default function Content({serverComponents}: {
+    serverComponents: Record<ServerComponents, ReactNode>;
+}) {
     return <div>
         <p>Hello</p>
         <main className={styles.main}>
             <Counter/>
-            {context.Clock}
-            {context.EditorModule}
+            {serverComponents.Clock}
+            {serverComponents.EditorModule}
+            {serverComponents.LinterModule}
         </main>
     </div>;
 }
