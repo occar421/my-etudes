@@ -1,3 +1,5 @@
+import "server-only";
+
 import styles from "./page.module.css";
 import {Suspense} from "react";
 import Content from "@/app/Content";
