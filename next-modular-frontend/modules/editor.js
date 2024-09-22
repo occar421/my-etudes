@@ -1,4 +1,11 @@
+"use client";
+
+import {useState} from "react";
+
 export default function Editor() {
-  return <summary>This is editor and have fun!</summary>;
-  // return "This is editor and have fun!";
+  const [test, setTest] = useState("")
+  return <div>
+    <summary>This is editor and have fun!</summary>
+    <input type="text" value={test} onChange={e => setTest(e.target.value)}/>
+  </div>;
 }
