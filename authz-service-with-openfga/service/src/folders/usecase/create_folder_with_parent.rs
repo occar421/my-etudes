@@ -1,9 +1,12 @@
-use crate::folders::model::FolderId;
+use crate::folders::model::{FolderId, FolderRepository};
 
-pub(crate) async fn exec(parent_folder_id: FolderId) -> Result<Content, ()> {
+pub(crate) async fn exec<FolderRepo: FolderRepository>(
+    parent_folder_id: FolderId,
+    folder_repo: FolderRepo,
+) -> Result<Content, ()> {
+    let folder_id = folder_repo.generate_id().await;
+
     // TODO check if parent DB record exists
-
-    let folder_id = FolderId(unimplemented!()); // TODO get from repository
 
     // TODO insert new folder in DB
 

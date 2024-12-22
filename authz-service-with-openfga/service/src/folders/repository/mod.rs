@@ -1,13 +1,13 @@
-use crate::folders::model::FolderId;
+use crate::folders::model::{FolderId, FolderRepository};
 use crate::folders::FolderContext;
 use openfga_client::apis::relationship_tuples_api::RelationshipTuplesApi;
 use openfga_client::models::{TupleKey, WriteRequest, WriteRequestWrites};
 use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::{NoContext, Timestamp, Uuid};
 
-pub(crate) struct FolderRepository {}
+pub(crate) struct FolderRepositoryImpl {}
 
-impl FolderRepository {
+impl FolderRepositoryImpl {
     // TODO rename
     pub(crate) async fn create_folder_with_parent(
         &self,
@@ -54,8 +54,10 @@ impl FolderRepository {
 
         Ok(())
     }
+}
 
-    pub(crate) async fn generate_id(&self) -> FolderId {
+impl FolderRepository for FolderRepositoryImpl {
+    async fn generate_id(&self) -> FolderId {
         let duration = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
         let id = Uuid::new_v7(Timestamp::from_unix(
             NoContext,

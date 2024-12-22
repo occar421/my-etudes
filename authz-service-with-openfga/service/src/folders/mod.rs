@@ -3,6 +3,7 @@ mod repository;
 mod usecase;
 
 use crate::folders::model::FolderId;
+use crate::folders::repository::FolderRepositoryImpl;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -37,14 +38,15 @@ async fn create_folder_command(
     State(context): State<FolderContext>,
     Json(payload): Json<CreateFolderRequestPayload>,
 ) -> impl IntoResponse {
+    let folder_repository = FolderRepositoryImpl {};
     let folder_id = if let Some(parent_folder_id) = payload.parent_folder_id {
         let parent_folder_id = FolderId(parent_folder_id);
-        usecase::create_folder_with_parent::exec(parent_folder_id)
+        usecase::create_folder_with_parent::exec(parent_folder_id, folder_repository)
             .await
             .unwrap()
             .id
     } else {
-        usecase::create_folder_without_parent::exec()
+        usecase::create_folder_without_parent::exec(folder_repository)
             .await
             .unwrap()
             .id
