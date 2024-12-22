@@ -1,4 +1,4 @@
-use crate::folders::model::{FolderId, FolderRepository};
+use crate::folders::model::{Folder, FolderId, FolderUpdateRepository};
 use crate::folders::FolderContext;
 use openfga_client::apis::relationship_tuples_api::RelationshipTuplesApi;
 use openfga_client::models::{TupleKey, WriteRequest, WriteRequestWrites};
@@ -14,17 +14,6 @@ impl FolderRepositoryImpl {
         parent_folder_id: Uuid,
         context: FolderContext,
     ) -> Result<(), ()> {
-        // TODO check if parent DB record exists
-
-        let duration = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-        let folder_id = Uuid::new_v7(Timestamp::from_unix(
-            NoContext,
-            duration.as_secs(),
-            duration.subsec_nanos(),
-        ));
-
-        // TODO insert new folder in DB
-
         let request = {
             let mut req = WriteRequest::new();
             req.writes = Some(Box::new(WriteRequestWrites::new(vec![TupleKey {
@@ -44,19 +33,9 @@ impl FolderRepositoryImpl {
 
         Ok(())
     }
-
-    // TODO rename
-    pub(crate) async fn create_folder_without_parent(
-        &self,
-        context: FolderContext,
-    ) -> Result<(), ()> {
-        // TODO insert new folder in DB
-
-        Ok(())
-    }
 }
 
-impl FolderRepository for FolderRepositoryImpl {
+impl FolderUpdateRepository for FolderRepositoryImpl {
     async fn generate_id(&self) -> FolderId {
         let duration = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
         let id = Uuid::new_v7(Timestamp::from_unix(
@@ -66,5 +45,13 @@ impl FolderRepository for FolderRepositoryImpl {
         ));
 
         FolderId(id)
+    }
+
+    async fn find_by_id(&self, id: &FolderId) -> Result<Folder, ()> {
+        todo!()
+    }
+
+    async fn create(&self, folder: Folder) -> Result<(), ()> {
+        todo!()
     }
 }

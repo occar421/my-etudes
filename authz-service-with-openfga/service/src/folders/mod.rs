@@ -41,7 +41,7 @@ async fn create_folder_command(
     let folder_repository = FolderRepositoryImpl {};
     let folder_id = if let Some(parent_folder_id) = payload.parent_folder_id {
         let parent_folder_id = FolderId(parent_folder_id);
-        usecase::create_folder_with_parent::exec(parent_folder_id, folder_repository)
+        usecase::create_folder_with_parent::exec(&parent_folder_id, folder_repository)
             .await
             .unwrap()
             .id
