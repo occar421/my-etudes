@@ -3,13 +3,13 @@ use std::collections::HashMap;
 
 pub(crate) mod create_folder;
 
-struct DomainEventHandler {
+pub(crate) struct DomainEventHandler {
     target_id: String,
     f: fn(&DomainEvent),
 }
 
 impl DomainEventHandler {
-    fn new(target_id: String, handler: fn(&DomainEvent)) -> Self {
+    pub(crate) fn new(target_id: String, handler: fn(&DomainEvent)) -> Self {
         Self {
             target_id,
             f: handler,
@@ -18,7 +18,9 @@ impl DomainEventHandler {
     fn target_id(&self) -> String {
         self.target_id.clone()
     }
-    fn handle(&self, event: &DomainEvent) {}
+    fn handle(&self, event: &DomainEvent) {
+        (self.f)(event)
+    }
 }
 
 pub(crate) struct DomainEventPublisher {
@@ -32,14 +34,14 @@ impl DomainEventPublisher {
         }
     }
 
-    fn subscribe(&mut self, handler: DomainEventHandler) {
+    pub(crate) fn subscribe(&mut self, handler: DomainEventHandler) {
         self.handlers
             .entry(handler.target_id())
             .or_default()
             .push(handler);
     }
 
-    fn publish(&self, events: &[DomainEvent]) {
+    pub(crate) fn publish(&self, events: &[DomainEvent]) {
         events.iter().for_each(|event| {
             self.handlers.get(&event.get_id()).map(|handlers| {
                 handlers.iter().for_each(|handler| {
