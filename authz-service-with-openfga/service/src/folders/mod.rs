@@ -4,6 +4,7 @@ mod usecase;
 
 use crate::folders::model::{FolderId, FolderName};
 use crate::folders::repository::FolderRepositoryImpl;
+use crate::folders::usecase::DomainEventPublisher;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -37,10 +38,15 @@ async fn create_folder_command(
     Json(payload): Json<CreateFolderRequestPayload>,
 ) -> impl IntoResponse {
     let folder_repository = FolderRepositoryImpl {};
+    // let domain_event_publisher = DomainEventPublisher::new();
+    // TODO comment out of ↑ -> compile error
 
-    let folder_created_event = usecase::create_folder::exec(
-        FolderName::from("a".to_string().try_into().unwrap()),
-        payload.parent_folder_id.map(|id| id.try_into().unwrap()),
+    let a = FolderName::from("a".to_string().try_into().unwrap());
+    let b: Option<FolderId> = payload.parent_folder_id.map(|id| id.try_into().unwrap());
+    let folder = usecase::create_folder::exec(
+        a,
+        b,
+        // domain_event_publisher,
         folder_repository,
     )
     .await
@@ -51,7 +57,7 @@ async fn create_folder_command(
     (
         StatusCode::OK,
         Json(CreateFolderResponsePayload {
-            id: unimplemented!(),
+            id: folder.id().clone().into(),
         }),
     )
 }

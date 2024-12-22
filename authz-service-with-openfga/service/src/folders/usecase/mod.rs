@@ -1,41 +1,36 @@
 use crate::folders::model::DomainEvent;
-use std::any::Any;
-use std::any::TypeId;
 use std::collections::HashMap;
 
 pub(crate) mod create_folder;
 
-trait DomainEventHandler<T: DomainEvent + 'static> {
-    // const TYPE_ID: TypeId = TypeId::of::<T>(); unstable with const
-    fn type_id(&self) -> TypeId {
-        TypeId::of::<T>()
-    }
-    fn handle(&self, event: &T);
+trait DomainEventHandler {
+    fn target_id(&self) -> String;
+    fn handle(&self, event: &DomainEvent);
 }
 
-struct DomainEventPublisher {
-    handlers: HashMap<TypeId, Vec<Box<dyn DomainEventHandler<dyn DomainEvent>>>>,
+pub(crate) struct DomainEventPublisher {
+    handlers: HashMap<String, Vec<Box<dyn DomainEventHandler>>>,
 }
 
 impl DomainEventPublisher {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             handlers: HashMap::new(),
         }
     }
 
-    fn subscribe(&mut self, handler: Box<dyn DomainEventHandler<dyn DomainEvent>>) {
+    fn subscribe(&mut self, handler: Box<dyn DomainEventHandler>) {
         self.handlers
-            .entry(handler.type_id())
+            .entry(handler.target_id())
             .or_default()
             .push(handler);
     }
 
-    fn publish(&self, events: &[Box<dyn DomainEvent>]) {
+    fn publish(&self, events: &[DomainEvent]) {
         events.iter().for_each(|event| {
-            self.handlers.get(&self.type_id()).map(|handlers| {
+            self.handlers.get(&event.get_id()).map(|handlers| {
                 handlers.iter().for_each(|handler| {
-                    handler.handle(event.clone());
+                    handler.handle(&event);
                 })
             });
         })

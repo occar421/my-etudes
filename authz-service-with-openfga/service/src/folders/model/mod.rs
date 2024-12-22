@@ -1,8 +1,31 @@
 use crate::common::generate_uuid_v7;
 use uuid::Uuid;
 
-pub(crate) trait DomainEvent {}
-pub(crate) trait DomainEventEnvelope {}
+#[derive(Clone)]
+pub(crate) enum DomainEvent {
+    Folder(FolderEvent),
+}
+
+impl DomainEvent {
+    pub(crate) fn get_id(&self) -> String {
+        match self {
+            DomainEvent::Folder(f) => f.get_id(),
+        }
+    }
+}
+
+#[derive(Clone)]
+pub enum FolderEvent {
+    Created { folder: Folder },
+}
+
+impl FolderEvent {
+    pub(crate) fn get_id(&self) -> String {
+        match self {
+            FolderEvent::Created { .. } => "FolderCreated".into(),
+        }
+    }
+}
 
 #[derive(Clone)]
 pub(crate) struct Folder {
@@ -15,14 +38,17 @@ impl Folder {
     pub(crate) fn create(
         name: FolderName,
         parent_id: Option<FolderId>,
-    ) -> (Self, Vec<Box<dyn DomainEvent>>) {
+    ) -> (Self, Vec<DomainEvent>) {
         let folder = Self {
             id: FolderId(generate_uuid_v7()),
             name,
             parent_id,
         };
 
-        (folder.clone(), vec![Box::new(FolderCreated::new(folder))])
+        (
+            folder.clone(),
+            vec![DomainEvent::Folder(FolderEvent::Created { folder })],
+        )
     }
 
     pub(crate) fn id(&self) -> &FolderId {
@@ -49,6 +75,12 @@ impl TryFrom<Uuid> for FolderId {
     }
 }
 
+impl Into<Uuid> for FolderId {
+    fn into(self) -> Uuid {
+        self.0
+    }
+}
+
 #[derive(Clone)]
 pub(crate) struct FolderName(String);
 
@@ -57,19 +89,6 @@ impl TryFrom<String> for FolderName {
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         Ok(Self(value))
-    }
-}
-
-#[derive(Clone)]
-pub(crate) struct FolderCreated {
-    folder: Folder,
-}
-
-impl DomainEvent for FolderCreated {}
-
-impl FolderCreated {
-    pub(crate) fn new(folder: Folder) -> Self {
-        Self { folder }
     }
 }
 
