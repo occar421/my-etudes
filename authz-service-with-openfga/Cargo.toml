@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "service"
+    "service",
+    "openfga-client"
 ]
 
 [workspace.package]

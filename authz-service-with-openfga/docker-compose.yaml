@@ -1,6 +1,13 @@
 version: '3.7'
 
 services:
+  openapi-generate:
+    volumes:
+      - ./:/local
+    image: openapitools/openapi-generator-cli
+    command: generate -i https://raw.githubusercontent.com/openfga/api/main/docs/openapiv2/apidocs.swagger.json      
+      -g rust -o /local/openfga-client
+      --additional-properties=library=reqwest-trait,packageName=openfga-client,packageVersion=1.0.0
   # docker compose run --rm openfga-migrate
   openfga-migrate:
     networks:
