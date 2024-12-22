@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  # docker compose run --rm openfga-migrate
+  openfga-migrate:
+    networks:
+      - openfga
+    volumes:
+      - openfga:/home/nonroot
+    user: nonroot
+    image: openfga/openfga
+    command: migrate --datastore-engine sqlite --datastore-uri
+      'file:/home/nonroot/openfga.db'
+  openfga:
+    container_name: openfga
+    networks:
+      - openfga
+    ports:
+      - 3000:3000
+      - 8080:8080
+      - 8081:8081
+    volumes:
+      - openfga:/home/nonroot
+    user: nonroot
+    image: openfga/openfga
+    command: run --datastore-engine sqlite --datastore-uri 'file:/home/nonroot/openfga.db'
+
+networks:
+  openfga:
+
+volumes:
+  openfga:
