@@ -1,4 +1,5 @@
 mod folders;
+mod common;
 
 use axum::Router;
 use openfga_client::apis::configuration::Configuration;

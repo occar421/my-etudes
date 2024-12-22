@@ -2,16 +2,14 @@ mod model;
 mod repository;
 mod usecase;
 
-use crate::folders::model::FolderId;
+use crate::folders::model::{FolderId, FolderName};
 use crate::folders::repository::FolderRepositoryImpl;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router};
-use openfga_client::apis::relationship_tuples_api::{
-    RelationshipTuplesApi, RelationshipTuplesApiClient,
-};
+use openfga_client::apis::relationship_tuples_api::RelationshipTuplesApiClient;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
@@ -39,22 +37,22 @@ async fn create_folder_command(
     Json(payload): Json<CreateFolderRequestPayload>,
 ) -> impl IntoResponse {
     let folder_repository = FolderRepositoryImpl {};
-    let folder_id = if let Some(parent_folder_id) = payload.parent_folder_id {
-        let parent_folder_id = FolderId(parent_folder_id);
-        usecase::create_folder_with_parent::exec(&parent_folder_id, folder_repository)
-            .await
-            .unwrap()
-            .id
-    } else {
-        usecase::create_folder_without_parent::exec(folder_repository)
-            .await
-            .unwrap()
-            .id
-    };
+
+    let folder_created_event = usecase::create_folder::exec(
+        FolderName::from("a".to_string().try_into().unwrap()),
+        payload.parent_folder_id.map(|id| id.try_into().unwrap()),
+        folder_repository,
+    )
+    .await
+    .unwrap();
+
+    // TODO add OpenFGA relation through event emit
 
     (
         StatusCode::OK,
-        Json(CreateFolderResponsePayload { id: folder_id.0 }),
+        Json(CreateFolderResponsePayload {
+            id: unimplemented!(),
+        }),
     )
 }
 

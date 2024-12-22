@@ -1,9 +1,8 @@
-use crate::folders::model::{Folder, FolderId, FolderUpdateRepository};
+use crate::folders::model::{Folder, FolderCommandRepository, FolderId};
 use crate::folders::FolderContext;
 use openfga_client::apis::relationship_tuples_api::RelationshipTuplesApi;
 use openfga_client::models::{TupleKey, WriteRequest, WriteRequestWrites};
-use std::time::{SystemTime, UNIX_EPOCH};
-use uuid::{NoContext, Timestamp, Uuid};
+use uuid::Uuid;
 
 pub(crate) struct FolderRepositoryImpl {}
 
@@ -19,7 +18,7 @@ impl FolderRepositoryImpl {
             req.writes = Some(Box::new(WriteRequestWrites::new(vec![TupleKey {
                 user: format!("folder:{}", parent_folder_id),
                 relation: "parent".into(),
-                object: format!("folder:uuid:{}", folder_id),
+                object: format!("folder:{}", unimplemented!()),
                 condition: None,
             }])));
             req
@@ -35,18 +34,8 @@ impl FolderRepositoryImpl {
     }
 }
 
-impl FolderUpdateRepository for FolderRepositoryImpl {
-    async fn generate_id(&self) -> FolderId {
-        let duration = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-        let id = Uuid::new_v7(Timestamp::from_unix(
-            NoContext,
-            duration.as_secs(),
-            duration.subsec_nanos(),
-        ));
-
-        FolderId(id)
-    }
-
+// Should select for update
+impl FolderCommandRepository for FolderRepositoryImpl {
     async fn find_by_id(&self, id: &FolderId) -> Result<Folder, ()> {
         todo!()
     }
