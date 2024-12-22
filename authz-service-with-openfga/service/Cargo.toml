@@ -9,3 +9,5 @@ axum = "0.8.0-rc.1"
 tokio = { version = "1.42", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_with = "3.11"
+openfga-client.workspace = true
+log = "0.4.22"

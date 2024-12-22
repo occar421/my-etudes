@@ -3,6 +3,10 @@ members = [
     "service",
     "openfga-client"
 ]
+resolver = "2"
 
 [workspace.package]
 edition = "2021"
+
+[workspace.dependencies]
+openfga-client = { path = "openfga-client" }
