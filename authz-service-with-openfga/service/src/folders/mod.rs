@@ -38,15 +38,12 @@ async fn create_folder_command(
     Json(payload): Json<CreateFolderRequestPayload>,
 ) -> impl IntoResponse {
     let folder_repository = FolderRepositoryImpl {};
-    // let domain_event_publisher = DomainEventPublisher::new();
-    // TODO comment out of ↑ -> compile error
+    let domain_event_publisher = DomainEventPublisher::new();
 
-    let a = FolderName::from("a".to_string().try_into().unwrap());
-    let b: Option<FolderId> = payload.parent_folder_id.map(|id| id.try_into().unwrap());
     let folder = usecase::create_folder::exec(
-        a,
-        b,
-        // domain_event_publisher,
+        FolderName::from("a".to_string().try_into().unwrap()),
+        payload.parent_folder_id.map(|id| id.try_into().unwrap()),
+        domain_event_publisher,
         folder_repository,
     )
     .await
