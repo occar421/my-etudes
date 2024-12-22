@@ -1,7 +1,7 @@
 use crate::common::generate_uuid_v7;
 use uuid::Uuid;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) enum DomainEvent {
     Folder(FolderEvent),
 }
@@ -14,20 +14,22 @@ impl DomainEvent {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum FolderEvent {
     Created { folder: Folder },
+    Moved {}, // TODO
 }
 
 impl FolderEvent {
     pub(crate) fn get_id(&self) -> String {
         match self {
             FolderEvent::Created { .. } => "FolderCreated".into(),
+            FolderEvent::Moved { .. } => "FolderMoved".into(),
         }
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct Folder {
     id: FolderId,
     name: FolderName,
@@ -64,7 +66,7 @@ impl Folder {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct FolderId(Uuid);
 
 impl TryFrom<Uuid> for FolderId {
@@ -81,7 +83,7 @@ impl Into<Uuid> for FolderId {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct FolderName(String);
 
 impl TryFrom<String> for FolderName {

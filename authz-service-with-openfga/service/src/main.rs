@@ -15,7 +15,7 @@ async fn main() {
     let store_id = "01JFQ79PAX6Y4QTYXK5H1JBAP7".to_string();
     // let authz_model_id = "01JFQD8HBS0ZTXPT5G7VC3K55A".to_string();
 
-    let app = Router::new().nest("/folders", folders::routes(store_id, rel_tuple_api_client));
+    let app = Router::new().nest("/folders", folders::init(store_id, rel_tuple_api_client));
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
