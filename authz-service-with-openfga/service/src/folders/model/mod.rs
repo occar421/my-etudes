@@ -1,6 +1,9 @@
 use crate::common::generate_uuid_v7;
 use uuid::Uuid;
 
+pub(crate) trait DomainEvent {}
+pub(crate) trait DomainEventEnvelope {}
+
 #[derive(Clone)]
 pub(crate) struct Folder {
     id: FolderId,
@@ -9,12 +12,17 @@ pub(crate) struct Folder {
 }
 
 impl Folder {
-    pub(crate) fn create(name: FolderName, parent_id: Option<FolderId>) -> Self {
-        Self {
+    pub(crate) fn create(
+        name: FolderName,
+        parent_id: Option<FolderId>,
+    ) -> (Self, Vec<Box<dyn DomainEvent>>) {
+        let folder = Self {
             id: FolderId(generate_uuid_v7()),
             name,
             parent_id,
-        }
+        };
+
+        (folder.clone(), vec![Box::new(FolderCreated::new(folder))])
     }
 
     pub(crate) fn id(&self) -> &FolderId {
@@ -56,6 +64,8 @@ impl TryFrom<String> for FolderName {
 pub(crate) struct FolderCreated {
     folder: Folder,
 }
+
+impl DomainEvent for FolderCreated {}
 
 impl FolderCreated {
     pub(crate) fn new(folder: Folder) -> Self {
