@@ -2,5 +2,10 @@
 name = "authz-service-with-openfga"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [dependencies]
+axum = "0.8.0-rc.1"
+tokio = { version = "1.42", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_with = "3.11"
