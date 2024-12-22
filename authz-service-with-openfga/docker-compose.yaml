@@ -1,11 +1,9 @@
-version: '3.7'
-
 services:
   openapi-generate:
     volumes:
       - ./:/local
     image: openapitools/openapi-generator-cli
-    command: generate -i https://raw.githubusercontent.com/openfga/api/main/docs/openapiv2/apidocs.swagger.json      
+    command: generate -i https://raw.githubusercontent.com/openfga/api/main/docs/openapiv2/apidocs.swagger.json
       -g rust -o /local/openfga-client
       --additional-properties=library=reqwest-trait,packageName=openfga-client,packageVersion=1.0.0
   # docker compose run --rm openfga-migrate
@@ -18,6 +16,16 @@ services:
     image: openfga/openfga
     command: migrate --datastore-engine sqlite --datastore-uri
       'file:/home/nonroot/openfga.db'
+  # docker compose run --rm openfga-convert-model | sed 's/\x1B\[[0-9;]*[JKmsu]//g' > .\service\authz-model.json
+  openfga-convert-model:
+    volumes:
+      - ./service/:/tmp
+    image: openfga/cli
+    command: model transform --file /tmp/authz-model.fga
+  openfga-cli:
+    volumes:
+      - ./service/:/tmp
+    image: openfga/cli
   openfga:
     container_name: openfga
     networks:

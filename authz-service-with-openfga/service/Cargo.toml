@@ -10,4 +10,4 @@ tokio = { version = "1.42", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_with = "3.11"
 openfga-client.workspace = true
-log = "0.4.22"
+uuid = { version = "1.11.0", features = ["v7"] }

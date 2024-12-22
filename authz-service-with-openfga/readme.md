@@ -14,19 +14,14 @@ Assuming its like Google services.
 
 ```mermaid
 classDiagram
-    class Item
     class Folder
     class Document
     class Project
-    class Party
     class User
     class Team
-    Folder --o Item
-    Item <|-- Folder
-    Item <|-- Document
-    Item <|-- Project
-    Party <|-- User
-    Party <|-- Team
-    Team --o Party
-    Item --o Party
+    Folder --o Folder
+    Folder --o Document
+    Folder --o Project
+    Team --o Team
+    Team --o User
 ```
