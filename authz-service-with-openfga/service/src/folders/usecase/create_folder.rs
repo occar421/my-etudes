@@ -1,9 +1,8 @@
-use crate::folders::model::{Folder, FolderCommandRepository, FolderId, FolderName};
+use crate::folders::model::{Folder, FolderUpdateRepository, FolderId};
 use crate::folders::usecase::DomainEventPublisher;
 use std::sync::Arc;
 
-pub(crate) async fn exec<FolderCommandRepo: FolderCommandRepository>(
-    name: FolderName,
+pub(crate) async fn exec<FolderCommandRepo: FolderUpdateRepository>(
     parent_id: Option<FolderId>,
     domain_event_publisher: Arc<DomainEventPublisher>,
     folder_repo: Arc<FolderCommandRepo>,
@@ -14,7 +13,7 @@ pub(crate) async fn exec<FolderCommandRepo: FolderCommandRepository>(
         }
     }
 
-    let (folder, events) = Folder::create(name, parent_id);
+    let (folder, events) = Folder::create(parent_id);
 
     folder_repo.create(folder.clone()).await?;
 

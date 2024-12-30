@@ -1,4 +1,4 @@
-use crate::folders::model::{Folder, FolderCommandRepository, FolderId};
+use crate::folders::model::{Folder, FolderUpdateRepository, FolderId};
 use crate::folders::FolderContext;
 use openfga_client::apis::relationship_tuples_api::RelationshipTuplesApi;
 use openfga_client::models::{TupleKey, WriteRequest, WriteRequestWrites};
@@ -35,7 +35,7 @@ impl FolderRepositoryImpl {
 }
 
 // Should select for update
-impl FolderCommandRepository for FolderRepositoryImpl {
+impl FolderUpdateRepository for FolderRepositoryImpl {
     async fn find_by_id(&self, id: &FolderId) -> Result<Folder, ()> {
         todo!()
     }

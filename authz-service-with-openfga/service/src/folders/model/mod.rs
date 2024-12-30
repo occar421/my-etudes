@@ -32,18 +32,13 @@ impl FolderEvent {
 #[derive(Clone, Debug)]
 pub(crate) struct Folder {
     id: FolderId,
-    name: FolderName,
     parent_id: Option<FolderId>,
 }
 
 impl Folder {
-    pub(crate) fn create(
-        name: FolderName,
-        parent_id: Option<FolderId>,
-    ) -> (Self, Vec<DomainEvent>) {
+    pub(crate) fn create(parent_id: Option<FolderId>) -> (Self, Vec<DomainEvent>) {
         let folder = Self {
             id: FolderId(generate_uuid_v7()),
-            name,
             parent_id,
         };
 
@@ -55,10 +50,6 @@ impl Folder {
 
     pub(crate) fn id(&self) -> &FolderId {
         &self.id
-    }
-
-    pub(crate) fn name(&self) -> &FolderName {
-        &self.name
     }
 
     pub(crate) fn parent_id(&self) -> &Option<FolderId> {
@@ -83,18 +74,7 @@ impl Into<Uuid> for FolderId {
     }
 }
 
-#[derive(Clone, Debug)]
-pub(crate) struct FolderName(String);
-
-impl TryFrom<String> for FolderName {
-    type Error = ();
-
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        Ok(Self(value))
-    }
-}
-
-pub(crate) trait FolderCommandRepository {
+pub(crate) trait FolderUpdateRepository {
     async fn find_by_id(&self, id: &FolderId) -> Result<Folder, ()>;
     async fn create(&self, folder: Folder) -> Result<(), ()>;
 }

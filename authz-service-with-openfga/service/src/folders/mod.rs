@@ -2,7 +2,7 @@ mod model;
 mod repository;
 mod usecase;
 
-use crate::folders::model::{DomainEvent, FolderEvent, FolderId, FolderName};
+use crate::folders::model::{DomainEvent, FolderEvent};
 use crate::folders::repository::FolderRepositoryImpl;
 use crate::folders::usecase::{DomainEventHandler, DomainEventPublisher};
 use axum::extract::State;
@@ -25,7 +25,7 @@ pub(super) fn init(
         "FolderCreated".to_string(),
         |event| {
             if let DomainEvent::Folder(FolderEvent::Created { folder }) = event {
-                println!("{:?}", folder.name());
+                unimplemented!()
             }
         },
     ));
@@ -34,7 +34,7 @@ pub(super) fn init(
     let folder_repository = Arc::new(FolderRepositoryImpl {});
 
     Router::new()
-        .route("/", post(create_folder_command))
+        .route("/", post(create_folder))
         .with_state(FolderContext {
             store_id,
             rel_tuple_api_client,
@@ -51,12 +51,11 @@ struct FolderContext {
     folder_repository: Arc<FolderRepositoryImpl>,
 }
 
-async fn create_folder_command(
+async fn create_folder(
     State(context): State<FolderContext>,
     Json(payload): Json<CreateFolderRequestPayload>,
 ) -> impl IntoResponse {
     let folder = usecase::create_folder::exec(
-        FolderName::from(payload.name.try_into().unwrap()),
         payload.parent_folder_id.map(|id| id.try_into().unwrap()),
         context.domain_event_publisher,
         context.folder_repository,
@@ -77,7 +76,6 @@ async fn create_folder_command(
 #[derive(Deserialize)]
 struct CreateFolderRequestPayload {
     parent_folder_id: Option<Uuid>,
-    name: String,
 }
 
 #[derive(Serialize)]
