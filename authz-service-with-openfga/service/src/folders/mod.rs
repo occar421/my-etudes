@@ -11,6 +11,7 @@ use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router};
 use openfga_client::apis::relationship_tuples_api::RelationshipTuplesApiClient;
+use openfga_client::models::{TupleKey, WriteRequest, WriteRequestWrites};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
@@ -25,13 +26,30 @@ pub(super) fn init(
         "FolderCreated".to_string(),
         |event| {
             if let DomainEvent::Folder(FolderEvent::Created { folder }) = event {
-                unimplemented!()
+                todo!("add OpenFGA relation through event emit")
+
+                // let request = {
+                //     let mut req = WriteRequest::new();
+                //     req.writes = Some(Box::new(WriteRequestWrites::new(vec![TupleKey {
+                //         user: format!("folder:{}", parent_folder_id),
+                //         relation: "parent".into(),
+                //         object: format!("folder:{}", unimplemented!()),
+                //         condition: None,
+                //     }])));
+                //     req
+                // };
+
+                // context
+                //     .rel_tuple_api_client
+                //     .write(&context.store_id, request)
+                //     .await
+                //     .unwrap();
             }
         },
     ));
 
     let domain_event_publisher = Arc::new(domain_event_publisher);
-    let folder_repository = Arc::new(FolderRepositoryImpl {});
+    let folder_repository = Arc::new(FolderRepositoryImpl::new());
 
     Router::new()
         .route("/", post(create_folder))
@@ -55,15 +73,17 @@ async fn create_folder(
     State(context): State<FolderContext>,
     Json(payload): Json<CreateFolderRequestPayload>,
 ) -> impl IntoResponse {
-    let folder = usecase::create_folder::exec(
+    let command = usecase::create_folder::Command::new(
         payload.parent_folder_id.map(|id| id.try_into().unwrap()),
+    );
+
+    let folder = usecase::create_folder::exec(
+        command,
         context.domain_event_publisher,
         context.folder_repository,
     )
     .await
     .unwrap();
-
-    // TODO add OpenFGA relation through event emit
 
     (
         StatusCode::OK,

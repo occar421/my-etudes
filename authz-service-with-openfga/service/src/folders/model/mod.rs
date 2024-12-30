@@ -74,7 +74,7 @@ impl Into<Uuid> for FolderId {
     }
 }
 
-pub(crate) trait FolderUpdateRepository {
+pub(crate) trait FolderRepository {
     async fn find_by_id(&self, id: &FolderId) -> Result<Folder, ()>;
     async fn create(&self, folder: Folder) -> Result<(), ()>;
 }
