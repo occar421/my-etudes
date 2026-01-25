@@ -3,43 +3,54 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 fn main() {
-    test::<RcResolver<usize>>();
-    test::<ArcResolver<usize>>();
+    test::<ThreadUnsafeResolver>();
 }
 
-trait RcSwitcher<T: ?Sized>: Display {
-    fn new(value: T) -> Self where T: Sized;
+trait ReferenceCountSwitcher {
+    type Result<T: Display>;
+
+    fn new<T: Display>(value: T) -> ReferenceCountWrap<Self::Result<T>>;
 }
 
-struct RcResolver<T: ?Sized>(Rc<T>);
+// impl<T: Display> Display for impl ReferenceCountSwitcher::Result<T> {
+//     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+//         todo!()
+//     }
+// }
 
-impl<T: ?Sized + Display> Display for RcResolver<T> {
+struct ReferenceCountWrap<Inner> {
+    inner: Inner,
+}
+
+impl<Inner> ReferenceCountWrap<Inner> {
+    fn new(inner: Inner) -> Self {
+        Self { inner }
+    }
+}
+
+impl<Inner: Display> Display for ReferenceCountWrap<Inner> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        self.0.fmt(f)
+        self.inner.fmt(f)
     }
 }
 
-impl<T: Display> RcSwitcher<T> for RcResolver<T> {
-    fn new(value: T) -> Self {
-        RcResolver(Rc::new(value))
+struct ThreadUnsafeResolver;
+
+impl ReferenceCountSwitcher for ThreadUnsafeResolver {
+    type Result<T: Display> = Rc<T>;
+
+    fn new<T: Display>(value: T) -> ReferenceCountWrap<Self::Result<T>> {
+        ReferenceCountWrap::new(Rc::new(value))
     }
 }
 
-struct ArcResolver<T: ?Sized>(Arc<T>);
+// impl<T: Display> Display for <ThreadUnsafeResolver as ReferenceCountSwitcher>::Result<T> {
+//     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+//         write!(f, "{}", self.as_ref())
+//     }
+// }
 
-impl<T: ?Sized + Display> Display for ArcResolver<T> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        self.0.fmt(f)
-    }
-}
-
-impl<T: Display> RcSwitcher<T> for ArcResolver<T> {
-    fn new(value: T) -> Self {
-        ArcResolver(Arc::new(value))
-    }
-}
-
-fn test<Rcs: RcSwitcher<usize>>() {
+fn test<Rcs: ReferenceCountSwitcher>() {
     let value = Rcs::new(1);
 
     println!("{}", value);
