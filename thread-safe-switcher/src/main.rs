@@ -7,9 +7,9 @@ fn main() {
 }
 
 trait ReferenceCountSwitcher {
-    type Result<T: Display>;
+    type Result<T>;
 
-    fn new<T: Display>(value: T) -> ReferenceCountWrap<Self::Result<T>>;
+    fn new<T>(value: T) -> ReferenceCountWrap<T>;
 }
 
 // impl<T: Display> Display for impl ReferenceCountSwitcher::Result<T> {
@@ -18,29 +18,44 @@ trait ReferenceCountSwitcher {
 //     }
 // }
 
-struct ReferenceCountWrap<Inner> {
-    inner: Inner,
+union ReferenceCountWrap<T> {
+    rc: std::mem::ManuallyDrop<Rc<T>>,
+    arc: std::mem::ManuallyDrop<Arc<T>>,
 }
 
-impl<Inner> ReferenceCountWrap<Inner> {
-    fn new(inner: Inner) -> Self {
-        Self { inner }
-    }
-}
-
-impl<Inner: Display> Display for ReferenceCountWrap<Inner> {
+impl<T> Display for ReferenceCountWrap<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        self.inner.fmt(f)
+        todo!()
     }
 }
+
+impl<T> ReferenceCountWrap<T> {
+    fn new_rc(inner: T) -> Self {
+        Self {
+            rc: std::mem::ManuallyDrop::new(Rc::new(inner)),
+        }
+    }
+
+    fn new_arc(inner: T) -> Self {
+        Self {
+            arc: std::mem::ManuallyDrop::new(Arc::new(inner)),
+        }
+    }
+}
+
+// impl<Inner: Display> Display for ReferenceCountWrap<Inner> {
+//     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+//         self.inner.fmt(f)
+//     }
+// }
 
 struct ThreadUnsafeResolver;
 
 impl ReferenceCountSwitcher for ThreadUnsafeResolver {
-    type Result<T: Display> = Rc<T>;
+    type Result<T> = Rc<T>;
 
-    fn new<T: Display>(value: T) -> ReferenceCountWrap<Self::Result<T>> {
-        ReferenceCountWrap::new(Rc::new(value))
+    fn new<T>(value: T) -> ReferenceCountWrap<T> {
+        ReferenceCountWrap::new_rc(value)
     }
 }
 
