@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 )
 
 type Fetcher interface {
@@ -18,34 +19,53 @@ type Body string
 // pages starting with url, to a maximum of depth.
 func Crawl(url string, depth int, fetcher Fetcher) {
 	ch := make(chan Body)
+	cache := make(map[Url]Body)
+	mutex := sync.Mutex{}
 
-	go crawl(url, depth, fetcher, ch)
+	go crawl(Url(url), depth, fetcher, ch, &mutex, &cache)
 
 	for body := range ch {
 		fmt.Printf("found: %s %q\n", url, string(body))
 	}
 }
 
-func crawl(url string, depth int, fetcher Fetcher, parentCh chan Body) {
-	// TODO: Don't fetch the same URL twice.
-	// This implementation doesn't do either:
-
+func crawl(url Url, depth int, fetcher Fetcher, parentCh chan Body, mutex *sync.Mutex, cache *map[Url]Body) {
 	defer close(parentCh)
 
 	if depth <= 0 {
 		return
 	}
-	body, urls, err := fetcher.Fetch(url)
-	if err != nil {
-		fmt.Println(err)
+
+	mutex.Lock()
+	body, ok := (*cache)[url]
+	mutex.Unlock()
+	if ok {
+		if body == "" {
+			return
+		}
+		parentCh <- body
 		return
 	}
-	parentCh <- Body(body)
+
+	body_, urls, err := fetcher.Fetch(string(url))
+	if err != nil {
+		fmt.Println(err)
+		mutex.Lock()
+		(*cache)[url] = ""
+		mutex.Unlock()
+		return
+	}
+	body = Body(body_)
+
+	mutex.Lock()
+	(*cache)[url] = body
+	mutex.Unlock()
+	parentCh <- body
 
 	childrenCh := make([]chan Body, len(urls))
 	for i, u := range urls {
 		childrenCh[i] = make(chan Body)
-		go crawl(u, depth-1, fetcher, childrenCh[i])
+		go crawl(Url(u), depth-1, fetcher, childrenCh[i], mutex, cache)
 	}
 	for _, ch := range childrenCh {
 		for body := range ch {
@@ -68,6 +88,7 @@ type fakeResult struct {
 }
 
 func (f fakeFetcher) Fetch(url string) (string, []string, error) {
+	fmt.Println("fetching", url)
 	if res, ok := f[url]; ok {
 		return res.body, res.urls, nil
 	}
