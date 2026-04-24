@@ -3,8 +3,4 @@ version = "0.1.0"
 defaultTargets = ["leanbyexample"]
 
 [[lean_lib]]
-name = "LeanByExample"
-
-[[lean_exe]]
 name = "leanbyexample"
-root = "Main"

@@ -9,18 +9,19 @@ structure UseCaseAtom where
   -- action: Action -- TODO ここは個別の関数になるかもしれない？ユビキタス言語の可能性も？
   object: Object
 
+inductive UseCaseSentence where
+  | atom(_: UseCaseAtom)
+  | invoke(_: UseCaseSentence)
+
 structure UseCase where
   title: UseCaseAtom
-  description: Array UseCaseAtom
+  description: Array UseCaseSentence
 
 -- Definition ends
 
-structure User extends Actor
+def User: Actor := Actor.mk
 
-instance : Coe User Actor where
-  coe _ := {}
-
-structure System extends Actor
+def System: Actor := Actor.mk
  
 inductive FileAttribute(τ) where
   | loading
@@ -28,11 +29,10 @@ inductive FileAttribute(τ) where
   | loaded(value: τ)
   | userDefined(value: τ)
 
-structure File extends Object where
-  content: FileAttribute String
+def File: Object := Object.mk
 
 def uc1 : UseCase := {
-  title := {actor := User, object := Object},
+  title := {actor := User, object := File},
   description := #[]
 }
 
