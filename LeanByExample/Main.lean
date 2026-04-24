@@ -50,25 +50,33 @@ inductive TemplateItem where
   | actor(a: Actor)
   | object(o: Object)
 
-syntax:max "uc!" interpolatedStr(term) : term
+elab:max "uc!" xs:interpolatedStr(term) : term => do
+  let parts := xs.raw.getArgs
+  let mut items := #[]
+  
+  for part in parts do
+    dbg_trace part
+    match part.getKind with
+    | Lean.Parser.Term.str => items := items.push 1
+  
+  return (toExpr items)
 
--- 3. マクロによる展開ルールの定義
-macro_rules
-  | `(uc! $interpStr) => do
-    let parts := interpStr.raw.getArgs
-    let mut items := #[]
-    
-    for part in parts do
-      -- if part.isStrLit? then
-        items := items.push (← `(TemplateItem.str part))
-      -- else
-        items := items.push (← `(TemplateItem.str part))
-    
-    `( $(quote items[0]!) )
-    -- let a := 12
-    -- `( $(quote a) )
-    -- `(11)
-    -- interpStr.expandInterpolatedStr (← `(String)) (← `(toString))
+-- macro_rules
+   --  | `(uc! $interpStr) => do
+   --    let parts := interpStr.raw.getArgs
+   --    let mut items := #[]
+   --    
+   --    for part in parts do
+   --      -- if part.isStrLit? then
+   --        items := items.push (← `(TemplateItem.str part))
+   --      -- else
+   --        items := items.push (← `(TemplateItem.str part))
+   --    
+   --    `( $(quote items[0]!) )
+   --    -- let a := 12
+   --    -- `( $(quote a) )
+   --    -- `(11)
+   --    -- interpStr.expandInterpolatedStr (← `(String)) (← `(toString))
 
 #check uc!"{User}は{LocalFile}をアップロードする"
 #eval uc!"{System}は{ServerFile}を削除する"
