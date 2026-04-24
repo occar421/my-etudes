@@ -55,8 +55,20 @@ syntax:max "uc!" interpolatedStr(term) : term
 -- 3. マクロによる展開ルールの定義
 macro_rules
   | `(uc! $interpStr) => do
-    let interpStr := interpStr
-    interpStr.expandInterpolatedStr (← `(String)) (← `(toString))
+    let parts := interpStr.raw.getArgs
+    let mut items := #[]
+    
+    for part in parts do
+      -- if part.isStrLit? then
+        items := items.push (← `(TemplateItem.str part))
+      -- else
+        items := items.push (← `(TemplateItem.str part))
+    
+    `( $(quote items[0]!) )
+    -- let a := 12
+    -- `( $(quote a) )
+    -- `(11)
+    -- interpStr.expandInterpolatedStr (← `(String)) (← `(toString))
 
 #check uc!"{User}は{LocalFile}をアップロードする"
 #eval uc!"{System}は{ServerFile}を削除する"
