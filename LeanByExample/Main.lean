@@ -1,4 +1,5 @@
 import Lean
+import Lean.Parser.Term
 
 open Lean Elab Term Meta
 
@@ -55,11 +56,26 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
   let mut items := #[]
   
   for part in parts do
-    dbg_trace part
-    match part.getKind with
-    | Lean.Parser.Term.str => items := items.push 1
+    match part with
+    | .node _ k a =>
+      match k with
+      | .str _ "interpolatedStrLitKind" =>
+        let a0 := a[0]!
+        let lit <- `a0 -- Type mismatch `a0 has type Name but is expected to have type TermElabM ?m.53 Lean 
+        -- let lit <- `(a0) -- Unknown identifier `a0✝`
+        -- let lit <- `("a") -- OK but not intended(fixed value)
+        items := items.push (<- `(TemplateItem.str $lit)) 
+      | _ => Elab.throwUnsupportedSyntax
+    | .ident _ _ n _ =>
+      dbg_trace part
+      items := items.push (<- `(TemplateItem.str "b"))
+    | _ => Elab.throwUnsupportedSyntax
+    
+
   
-  return (toExpr items)
+  let listExpr <- `([$items,*])
+  elabTerm listExpr none
+  -- return `( $(quote parts[0]!) )
 
 -- macro_rules
    --  | `(uc! $interpStr) => do
@@ -79,7 +95,7 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
    --    -- interpStr.expandInterpolatedStr (← `(String)) (← `(toString))
 
 #check uc!"{User}は{LocalFile}をアップロードする"
-#eval uc!"{System}は{ServerFile}を削除する"
+#check uc!"{System}は{ServerFile}を削除する"
 
 def uc1 : UseCase := {
   title := {actor := User, object := ServerFile},
