@@ -49,13 +49,15 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
     
     match part with
     | .ident _ _ name _ =>
-      items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.actor) #[mkIdent name]
-      continue
-    | _ => -- noop
-    
-    dbg_trace part
-    
-    dbg_trace ""
+      let typeExpr <- inferType (<- elabTerm part none)
+      match typeExpr with
+      | .const typeName _ =>
+        match typeName.toString with
+        | "Actor" => items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.actor) #[mkIdent name]
+        | "Object" => items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.object) #[mkIdent name]
+        | _ => Elab.throwUnsupportedSyntax  
+      | _ => Elab.throwUnsupportedSyntax
+    | _ => Elab.throwUnsupportedSyntax
 
   let listSyntax <- `([$items,*])
   elabTerm listSyntax none -- TODO Fix expected type (last arg), TODO native Expr
@@ -76,12 +78,12 @@ def ServerFile: Object := { name:= "ServerFile" } -- TODO use ServerFileAttribut
 
 def LocalFile: Object := { name:= "LocalFile" }
 
-#check uc!"{User}は画面を開く"
--- #check uc!"{User}は{LocalFile}をアップロードする"
+-- #check uc!"{User}は画面を開く"
+#check uc!"{User}は{LocalFile}をアップロードする"
 -- #check uc!"{System}は{User as target}を削除する "
--- #check uc!"{System}は{ServerFile}を削除する"
+#check uc!"{System}は{ServerFile}を削除する"
 -- #check uc!"{System}は{LocalFile}を最大{5}回チェックする"
--- #check uc!"管理者はユーザーを削除する"
+#check uc!"管理者はユーザーを削除する"
 
 def uc1 : UseCase := {
   title := {actor := User, object := ServerFile},
