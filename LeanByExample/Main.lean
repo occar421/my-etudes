@@ -24,7 +24,7 @@ structure UseCaseAtom where
 
 inductive UseCaseSentence where
   | atom(_: UseCaseAtom)
-  | invoke(_: UseCaseSentence)
+  | reference(_: UseCaseSentence)
 
 structure UseCase where
   title: UseCaseAtom
