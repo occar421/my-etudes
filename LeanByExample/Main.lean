@@ -63,17 +63,24 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
       continue
     | none => -- noop
     
-    dbg_trace "not interpolatedStrLit"
+    match part with
+    | .ident _ _ name _ =>
+      items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.actor) #[mkIdent name]
+      continue
+    | _ => -- noop
+    
+    dbg_trace part
     
     dbg_trace ""
 
   let listSyntax <- `([$items,*])
   elabTerm listSyntax none -- TODO Fix expected type (last arg), TODO native Expr
 
-#check uc!"{User}は{LocalFile}をアップロードする"
-#check uc!"{System}は{ServerFile}を削除する"
-#check uc!"{System}は{LocalFile}を最大{5}回チェックする"
-#check uc!"管理者はユーザーを削除する"
+#check uc!"{User}は画面を開く"
+-- #check uc!"{User}は{LocalFile}をアップロードする"
+-- #check uc!"{System}は{ServerFile}を削除する"
+-- #check uc!"{System}は{LocalFile}を最大{5}回チェックする"
+-- #check uc!"管理者はユーザーを削除する"
 
 def uc1 : UseCase := {
   title := {actor := User, object := ServerFile},
