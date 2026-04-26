@@ -29,6 +29,9 @@ inductive UseCaseFragment where
 structure UseCase where
   body: Array UseCaseFragment
 
+def UseCase.toReadableString(uc:UseCase): String :=
+  uc.body.foldl (init := "") (fun acc f => acc ++ match f with | .str s => s | .actor a => a.name | .target o => o.name)
+
 inductive UseCaseSentence where
   | body(_: UseCase)
   | reference(_: UseCaseSentence)
@@ -89,7 +92,7 @@ def LocalFile: Object := { name:= "LocalFile" }
 
 -- #check uc!"{User}は画面を開く"
 #check uc!"{User}は{LocalFile}をアップロードする"
-#check uc!"{System}は{User as target}を削除する "
+#check uc!"{System}は{User as target}を削除する"
 #check uc!"{System}は{ServerFile}を削除する"
 -- #check uc!"{System}は{LocalFile}を最大{5}回チェックする" -- 不要？
 #check uc!"管理者はユーザーを削除する"
@@ -102,5 +105,6 @@ def uc1 : SystemUseCase := {
 }
 -/
 
-def main : IO Unit :=
+def main : IO Unit := do
   IO.println s!"Hello, World!"
+  IO.println uc!"{System}は{User as target}を削除する".toReadableString
