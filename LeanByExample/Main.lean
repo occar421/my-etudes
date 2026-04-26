@@ -58,7 +58,16 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
   for part in parts do
     match Syntax.isInterpolatedStrLit? part with
     | some "" => continue
-    | some strLit => items := items.push (<- `( $(Lean.Quote.quote strLit) )); continue
+    -- | some strLit => items := items.push (<- `( $(Lean.Quote.quote strLit) )); continue
+    | some strLit =>
+      -- let strLitExpr := `($(Lean.Quote.quote strLit))
+      -- let strLitExpr := Expr.const ``String []
+      -- items := items.push (<- (Expr.app (Expr.const ``TemplateItem.str []) strLitExpr ) )
+      -- continue
+      let tmp <- `( $(Lean.Quote.quote strLit) )
+      items := items.push tmp; continue
+      
+      -- items := items.push (<- (Expr.app (Expr.const ``TemplateItem.str []) `( $(Lean.Quote.quote strLit) ) )); continue
     | none => -- noop
     
     dbg_trace "not interpolatedStrLit"
@@ -86,10 +95,11 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
     | _ => Elab.throwUnsupportedSyntax -/
     
 
-  
-  let listExpr <- `([$items,*])
+  -- let result := Lean.mkAppN (Expr.const)
+  -- return result
+  let listSyntax <- `([$items,*])
   -- let listExpr <- `([])
-  elabTerm listExpr none -- TODO Fix expected type (last arg)
+  elabTerm listSyntax none -- TODO Fix expected type (last arg), TODO native Expr
   -- return `( $(quote parts[0]!) )
 
 -- macro_rules
@@ -111,6 +121,7 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
 
 #check uc!"{User}は{LocalFile}をアップロードする"
 -- #check uc!"{System}は{ServerFile}を削除する"
+-- #check uc!"{System}は{LocalFile}を最大{5}回チェックする"
 -- #check uc!"管理者はユーザーを削除する"
 
 def uc1 : UseCase := {
