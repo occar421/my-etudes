@@ -56,12 +56,25 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
   let mut items := #[]
   
   for part in parts do
-    match part with
+    -- dbg_trace part
+    match Syntax.isInterpolatedStrLit? part with
+    | some "" => continue
+    | some strLit => items := items.push (<- `( $(Lean.Quote.quote strLit) )); continue
+    | none => dbg_trace "not interpolatedStrLit"
+    
+    dbg_trace ""
+    
+    -- match part with
+    -- | `(interpolatedStrLitKind $a) => dbg_trace a
+    -- | _ => dbg_trace "not interpolatedStrLitKind"
+    -- dbg_trace ""
+ 
+/-     match part with
     | .node _ k a =>
       match k with
       | .str _ "interpolatedStrLitKind" =>
         let a0 := a[0]!
-        let lit <- `a0 -- Type mismatch `a0 has type Name but is expected to have type TermElabM ?m.53 Lean 
+        let lit <- `(a0) -- Type mismatch `a0 has type Name but is expected to have type TermElabM ?m.53 Lean 
         -- let lit <- `(a0) -- Unknown identifier `a0✝`
         -- let lit <- `("a") -- OK but not intended(fixed value)
         items := items.push (<- `(TemplateItem.str $lit)) 
@@ -69,12 +82,13 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
     | .ident _ _ n _ =>
       dbg_trace part
       items := items.push (<- `(TemplateItem.str "b"))
-    | _ => Elab.throwUnsupportedSyntax
+    | _ => Elab.throwUnsupportedSyntax -/
     
 
   
   let listExpr <- `([$items,*])
-  elabTerm listExpr none
+  -- let listExpr <- `([])
+  elabTerm listExpr none -- TODO Fix expected type (last arg)
   -- return `( $(quote parts[0]!) )
 
 -- macro_rules
@@ -95,7 +109,8 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
    --    -- interpStr.expandInterpolatedStr (← `(String)) (← `(toString))
 
 #check uc!"{User}は{LocalFile}をアップロードする"
-#check uc!"{System}は{ServerFile}を削除する"
+-- #check uc!"{System}は{ServerFile}を削除する"
+-- #check uc!"管理者はユーザーを削除する"
 
 def uc1 : UseCase := {
   title := {actor := User, object := ServerFile},
