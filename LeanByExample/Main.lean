@@ -17,6 +17,8 @@ structure Object where
 instance : ToString Object where
   toString o := o.name
 
+def ActorAsObject(actor: Actor): Object := { name := actor.name }
+
 structure UseCaseAtom where
   actor: Actor
   -- action: Action -- TODO ここは個別の関数になるかもしれない？ユビキタス言語の可能性も？
@@ -55,10 +57,16 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
         match typeName.toString with
         | "Actor" => items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.actor) #[mkIdent name]
         | "Object" => items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.target) #[mkIdent name]
-        | _ => Elab.throwUnsupportedSyntax  
+        | _ => Elab.throwUnsupportedSyntax
       | _ => Elab.throwUnsupportedSyntax
+    | _ => -- noop
+    
+    match part with
+    | `($actor as target) =>
+      let inner := Syntax.mkApp (mkIdent ``ActorAsObject) #[actor]
+      items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.target) #[inner]
     | _ => Elab.throwUnsupportedSyntax
-
+    
   let listSyntax <- `([$items,*])
   elabTerm listSyntax none -- TODO Fix expected type (last arg), TODO native Expr
 
@@ -80,9 +88,9 @@ def LocalFile: Object := { name:= "LocalFile" }
 
 -- #check uc!"{User}は画面を開く"
 #check uc!"{User}は{LocalFile}をアップロードする"
--- #check uc!"{System}は{User as target}を削除する "
+#check uc!"{System}は{User as target}を削除する "
 #check uc!"{System}は{ServerFile}を削除する"
--- #check uc!"{System}は{LocalFile}を最大{5}回チェックする"
+-- #check uc!"{System}は{LocalFile}を最大{5}回チェックする" -- 不要？
 #check uc!"管理者はユーザーを削除する"
 
 def uc1 : UseCase := {
