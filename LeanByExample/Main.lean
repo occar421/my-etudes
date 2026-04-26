@@ -56,11 +56,12 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
   let mut items := #[]
   
   for part in parts do
-    -- dbg_trace part
     match Syntax.isInterpolatedStrLit? part with
     | some "" => continue
     | some strLit => items := items.push (<- `( $(Lean.Quote.quote strLit) )); continue
-    | none => dbg_trace "not interpolatedStrLit"
+    | none => -- noop
+    
+    dbg_trace "not interpolatedStrLit"
     
     dbg_trace ""
     
