@@ -30,22 +30,6 @@ structure UseCase where
   title: UseCaseAtom
   description: Array UseCaseSentence -- TODO index および 名前付き参照
 
--- Definition ends
-
-def User: Actor := { name := "User" }
-
-def System: Actor := { name := "System" }
- 
-inductive ServerFileAttribute(τ) where
-  | loading
-  | failed
-  | loaded(value: τ)
-  | userDefined(value: τ)
-
-def ServerFile: Object := { name:= "ServerFile" } -- TODO use ServerFileAttribute
-
-def LocalFile: Object := { name:= "LocalFile" }
-
 inductive TemplateItem where
   | str(s: String)
   | actor(a: Actor)
@@ -75,6 +59,22 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
 
   let listSyntax <- `([$items,*])
   elabTerm listSyntax none -- TODO Fix expected type (last arg), TODO native Expr
+
+-- Definition ends
+
+def User: Actor := { name := "User" }
+
+def System: Actor := { name := "System" }
+ 
+inductive ServerFileAttribute(τ) where
+  | loading
+  | failed
+  | loaded(value: τ)
+  | userDefined(value: τ)
+
+def ServerFile: Object := { name:= "ServerFile" } -- TODO use ServerFileAttribute
+
+def LocalFile: Object := { name:= "LocalFile" }
 
 #check uc!"{User}は画面を開く"
 -- #check uc!"{User}は{LocalFile}をアップロードする"
