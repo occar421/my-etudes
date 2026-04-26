@@ -78,6 +78,7 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
 
 #check uc!"{User}は画面を開く"
 -- #check uc!"{User}は{LocalFile}をアップロードする"
+-- #check uc!"{System}は{User as target}を削除する "
 -- #check uc!"{System}は{ServerFile}を削除する"
 -- #check uc!"{System}は{LocalFile}を最大{5}回チェックする"
 -- #check uc!"管理者はユーザーを削除する"
