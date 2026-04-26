@@ -105,6 +105,21 @@ def uc1 : SystemUseCase := {
 }
 -/
 
+/- TODO 以下の実現
+description: description!
+  uc!"{System}は{ServerFile}を{Display}する" where
+    Display ServerFile with -- これが無いとコンパイルエラー（todo/wip/tbd/sorry/noop は可能） （外部参照や切り出して書くことも可能にしたい）
+    | loading => `"Loading" と表示する`
+    | loaded _ => "値を表示する"
+    | _ => noop
+    Sort ServerFile with
+    | _ => -- 略
+    -- ( Action x Target)
+  uc!"~~~"
+
+-- trailing comma は勝手にできるかもしれないが…
+-/
+
 def main : IO Unit := do
   IO.println s!"Hello, World!"
   IO.println uc!"{System}は{User as target}を削除する".toReadableString
