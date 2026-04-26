@@ -33,7 +33,7 @@ structure UseCase where
 inductive TemplateItem where
   | str(s: String)
   | actor(a: Actor)
-  | object(o: Object)
+  | target(o: Object)
 
 elab:max "uc!" xs:interpolatedStr(term) : term => do
   let parts := xs.raw.getArgs
@@ -54,7 +54,7 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
       | .const typeName _ =>
         match typeName.toString with
         | "Actor" => items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.actor) #[mkIdent name]
-        | "Object" => items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.object) #[mkIdent name]
+        | "Object" => items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.target) #[mkIdent name]
         | _ => Elab.throwUnsupportedSyntax  
       | _ => Elab.throwUnsupportedSyntax
     | _ => Elab.throwUnsupportedSyntax
