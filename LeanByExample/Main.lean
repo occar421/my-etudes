@@ -58,71 +58,22 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
   for part in parts do
     match Syntax.isInterpolatedStrLit? part with
     | some "" => continue
-    -- | some strLit => items := items.push (<- `( $(Lean.Quote.quote strLit) )); continue
     | some strLit =>
-      -- let strLitExpr := `($(Lean.Quote.quote strLit))
-      -- let strLitExpr := Expr.const ``String []
-      -- items := items.push (<- (Expr.app (Expr.const ``TemplateItem.str []) strLitExpr ) )
-      -- continue
-      let tmp <- `( $(Lean.Quote.quote strLit) )
-      items := items.push tmp; continue
-      
-      -- items := items.push (<- (Expr.app (Expr.const ``TemplateItem.str []) `( $(Lean.Quote.quote strLit) ) )); continue
+      items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.str) #[Syntax.mkStrLit strLit]
+      continue
     | none => -- noop
     
     dbg_trace "not interpolatedStrLit"
     
     dbg_trace ""
-    
-    -- match part with
-    -- | `(interpolatedStrLitKind $a) => dbg_trace a
-    -- | _ => dbg_trace "not interpolatedStrLitKind"
-    -- dbg_trace ""
- 
-/-     match part with
-    | .node _ k a =>
-      match k with
-      | .str _ "interpolatedStrLitKind" =>
-        let a0 := a[0]!
-        let lit <- `(a0) -- Type mismatch `a0 has type Name but is expected to have type TermElabM ?m.53 Lean 
-        -- let lit <- `(a0) -- Unknown identifier `a0✝`
-        -- let lit <- `("a") -- OK but not intended(fixed value)
-        items := items.push (<- `(TemplateItem.str $lit)) 
-      | _ => Elab.throwUnsupportedSyntax
-    | .ident _ _ n _ =>
-      dbg_trace part
-      items := items.push (<- `(TemplateItem.str "b"))
-    | _ => Elab.throwUnsupportedSyntax -/
-    
 
-  -- let result := Lean.mkAppN (Expr.const)
-  -- return result
   let listSyntax <- `([$items,*])
-  -- let listExpr <- `([])
   elabTerm listSyntax none -- TODO Fix expected type (last arg), TODO native Expr
-  -- return `( $(quote parts[0]!) )
-
--- macro_rules
-   --  | `(uc! $interpStr) => do
-   --    let parts := interpStr.raw.getArgs
-   --    let mut items := #[]
-   --    
-   --    for part in parts do
-   --      -- if part.isStrLit? then
-   --        items := items.push (← `(TemplateItem.str part))
-   --      -- else
-   --        items := items.push (← `(TemplateItem.str part))
-   --    
-   --    `( $(quote items[0]!) )
-   --    -- let a := 12
-   --    -- `( $(quote a) )
-   --    -- `(11)
-   --    -- interpStr.expandInterpolatedStr (← `(String)) (← `(toString))
 
 #check uc!"{User}は{LocalFile}をアップロードする"
--- #check uc!"{System}は{ServerFile}を削除する"
--- #check uc!"{System}は{LocalFile}を最大{5}回チェックする"
--- #check uc!"管理者はユーザーを削除する"
+#check uc!"{System}は{ServerFile}を削除する"
+#check uc!"{System}は{LocalFile}を最大{5}回チェックする"
+#check uc!"管理者はユーザーを削除する"
 
 def uc1 : UseCase := {
   title := {actor := User, object := ServerFile},
