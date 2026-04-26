@@ -5,6 +5,7 @@ open Lean Elab Term Meta
 
 structure Actor where
   name: String -- TODO 自動取得
+  -- TODO attribute: α
 
 instance : ToString Actor where
   toString a := a.name
@@ -13,6 +14,7 @@ instance : ToString Actor where
 
 structure Object where
   name: String -- TODO 自動取得
+  -- TODO attribute: α
 
 instance : ToString Object where
   toString o := o.name
@@ -114,7 +116,7 @@ description: description!
     | _ => noop
     Sort ServerFile with
     | _ => -- 略
-    -- ( Action x Target)
+    -- ( Actor x Action x Target)
   uc!"~~~"
 
 -- trailing comma は勝手にできるかもしれないが…
