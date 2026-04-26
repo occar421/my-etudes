@@ -9,7 +9,7 @@ structure Actor where
 instance : ToString Actor where
   toString a := a.name
 
--- structure Action
+-- TODO structure Action
 
 structure Object where
   name: String -- TODO 自動取得
@@ -19,23 +19,23 @@ instance : ToString Object where
 
 def ActorAsObject(actor: Actor): Object := { name := actor.name }
 
-structure UseCaseAtom where
-  actor: Actor
-  -- action: Action -- TODO ここは個別の関数になるかもしれない？ユビキタス言語の可能性も？
-  object: Object
+/- Element Definition end -/
 
-inductive UseCaseSentence where
-  | atom(_: UseCaseAtom)
-  | reference(_: UseCaseSentence)
-
-structure UseCase where
-  title: UseCaseAtom
-  description: Array UseCaseSentence -- TODO index および 名前付き参照
-
-inductive TemplateItem where
+inductive UseCaseFragment where
   | str(s: String)
   | actor(a: Actor)
   | target(o: Object)
+
+structure UseCase where
+  body: Array UseCaseFragment
+
+inductive UseCaseSentence where
+  | body(_: UseCase)
+  | reference(_: UseCaseSentence)
+
+structure SystemUseCase where
+  title: UseCase
+  description: Array UseCaseSentence -- TODO index および 名前付き参照
 
 elab:max "uc!" xs:interpolatedStr(term) : term => do
   let parts := xs.raw.getArgs
@@ -45,7 +45,7 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
     match Syntax.isInterpolatedStrLit? part with
     | some "" => continue
     | some strLit =>
-      items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.str) #[Syntax.mkStrLit strLit]
+      items := items.push $ Syntax.mkApp (mkIdent ``UseCaseFragment.str) #[Syntax.mkStrLit strLit]
       continue
     | none => -- noop
     
@@ -55,8 +55,8 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
       match typeExpr with
       | .const typeName _ =>
         match typeName.toString with
-        | "Actor" => items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.actor) #[mkIdent name]
-        | "Object" => items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.target) #[mkIdent name]
+        | "Actor" => items := items.push $ Syntax.mkApp (mkIdent ``UseCaseFragment.actor) #[mkIdent name]
+        | "Object" => items := items.push $ Syntax.mkApp (mkIdent ``UseCaseFragment.target) #[mkIdent name]
         | _ => Elab.throwUnsupportedSyntax
       | _ => Elab.throwUnsupportedSyntax
     | _ => -- noop
@@ -64,13 +64,14 @@ elab:max "uc!" xs:interpolatedStr(term) : term => do
     match part with
     | `($actor as target) =>
       let inner := Syntax.mkApp (mkIdent ``ActorAsObject) #[actor]
-      items := items.push $ Syntax.mkApp (mkIdent ``TemplateItem.target) #[inner]
+      items := items.push $ Syntax.mkApp (mkIdent ``UseCaseFragment.target) #[inner]
     | _ => Elab.throwUnsupportedSyntax
     
-  let listSyntax <- `([$items,*])
-  elabTerm listSyntax none -- TODO Fix expected type (last arg), TODO native Expr
+  let listSyntax <- `(#[$items,*])
+  let wrap := Syntax.mkApp (mkIdent ``UseCase.mk) #[listSyntax]
+  elabTerm wrap none
 
--- Definition ends
+/- UseCase Definition ends -/
 
 def User: Actor := { name := "User" }
 
@@ -92,11 +93,14 @@ def LocalFile: Object := { name:= "LocalFile" }
 #check uc!"{System}は{ServerFile}を削除する"
 -- #check uc!"{System}は{LocalFile}を最大{5}回チェックする" -- 不要？
 #check uc!"管理者はユーザーを削除する"
+-- TODO #check uc!"{System}は{ServerFile}を{Delete}する"
 
-def uc1 : UseCase := {
-  title := {actor := User, object := ServerFile},
+/-
+def uc1 : SystemUseCase := {
+  title := uc!"{User}は{LocalFile}をアップロードする"
   description := #[]
 }
+-/
 
 def main : IO Unit :=
   IO.println s!"Hello, World!"
