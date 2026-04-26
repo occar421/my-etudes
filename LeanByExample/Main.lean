@@ -38,7 +38,7 @@ inductive UseCaseSentence where
 
 structure SystemUseCase where
   title: UseCase
-  description: Array UseCaseSentence -- TODO index および 名前付き参照
+  description: Array UseCaseSentence -- TODO index および 名前付き参照, 詳細分岐記法
 
 elab:max "uc!" xs:interpolatedStr(term) : term => do
   let parts := xs.raw.getArgs
