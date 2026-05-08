@@ -147,6 +147,21 @@ elab "Feature:" txt:rawTextUntilLineEnd : term => do
 #check Feature: あいうえお
 #check Feature: 1 + 2 = 3
 
+-- 外部ファイルを読み込んで実行するコマンドの例
+syntax (name := loadLean) "load_from_file " str : command
+
+@[command_elab loadLean]
+def elabLoadLean : CommandElab := fun stx => do
+  let `(command| load_from_file $pathStx) := stx | throwUnsupportedSyntax
+  let path := pathStx.getString
+  let content ← liftIO <| IO.FS.readFile path
+  let env ← getEnv
+  match Parser.runParserCategory env `command content with
+  | Except.ok stx => elabCommand stx
+  | Except.error err => throwError (m!"{err}")
+
+-- 使い方 (my_script.txt の中身が Lean コードであれば実行される)
+load_from_file "./test.feature"
 
 def main : IO Unit := do
   IO.println s!"Hello, World!"
