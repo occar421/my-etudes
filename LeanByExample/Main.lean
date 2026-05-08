@@ -147,17 +147,27 @@ Feature: あいうえお
 Feature: 1 + 2 = 3
 
 -- 外部ファイルを読み込んで実行するコマンドの例
-syntax (name := loadLean) "load_gherkin_file " str : command
+syntax (name := loadLean) "load_gherkin_files " str : command
 
 @[command_elab loadLean]
 def elabLoadLean : CommandElab := fun stx => do
-  let `(command| load_gherkin_file $pathStx) := stx | throwUnsupportedSyntax
+  let `(command| load_gherkin_files $pathStx) := stx | throwUnsupportedSyntax
   let path := pathStx.getString
-  let content ← liftIO <| IO.FS.readFile path
-  let env ← getEnv
-  match Parser.runParserCategory env `command content with
-  | Except.ok stx => elabCommand stx
-  | Except.error err => throwError (m!"{err}")
+  let paths ← liftIO <| do
+    let path := System.FilePath.mk path
+    if ← path.isDir then
+      let entries ← path.readDir
+      pure <| entries.filterMap fun entry =>
+        let p := entry.path
+        if p.extension == some "feature" then some p else none
+    else
+      pure #[path]
+  for path in paths do
+    let content ← liftIO <| IO.FS.readFile path
+    let env ← getEnv
+    match Parser.runParserCategory env `command content with
+    | Except.ok stx => elabCommand stx
+    | Except.error err => throwError (m!"Error in {path}: {err}")
 
 syntax (name := printFeatures) "#print_features" : command
 
@@ -170,7 +180,7 @@ def elabPrintFeatures : CommandElab := fun _ => do
     logInfo <| String.intercalate "\n\n" features.toList
 
 -- 使い方 (my_script.txt の中身が Lean コードであれば実行される)
-load_gherkin_file "./test.feature"
+load_gherkin_files "./features"
 
 def main : IO Unit := do
   IO.println s!"Hello, World!"
