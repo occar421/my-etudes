@@ -1,7 +1,7 @@
 import Lean
 import Lean.Parser.Term
 
-open Lean Elab Term Meta
+open Lean Elab Term Meta Command Parser PrettyPrinter
 
 structure Actor where
   name: String -- TODO 自動取得
@@ -121,6 +121,32 @@ description: description!
 
 -- trailing comma は勝手にできるかもしれないが…
 -/
+
+
+def rawTextUntilLineEnd : Parser := 
+  { fn := fun c s =>
+      let startPos := s.pos
+      -- 改行に当たるまで位置を進める
+      let s := takeUntilFn (fun c => c == '\n') c s
+      let str := startPos.extract c.inputString s.pos
+      -- 抽出した文字列を「アトム」としてスタックに積む
+      s.pushSyntax (Syntax.atom SourceInfo.none str)
+  }
+
+@[combinator_formatter rawTextUntilLineEnd]
+def rawTextUntilLineEnd.formatter : Formatter := Formatter.visitAtom Name.anonymous
+
+@[combinator_parenthesizer rawTextUntilLineEnd]
+def rawTextUntilLineEnd.parenthesizer : Parenthesizer := Parenthesizer.visitToken
+
+elab "Feature:" txt:rawTextUntilLineEnd : term => do
+  let str := txt.raw.getAtomVal -- .trim
+  -- dbg_trace str
+  elabTerm (<- `($(quote str))) none 
+
+#check Feature: あいうえお
+#check Feature: 1 + 2 = 3
+
 
 def main : IO Unit := do
   IO.println s!"Hello, World!"
