@@ -139,20 +139,19 @@ def rawTextUntilLineEnd.formatter : Formatter := Formatter.visitAtom Name.anonym
 @[combinator_parenthesizer rawTextUntilLineEnd]
 def rawTextUntilLineEnd.parenthesizer : Parenthesizer := Parenthesizer.visitToken
 
-elab "Feature:" txt:rawTextUntilLineEnd : term => do
+elab "Feature:" txt:rawTextUntilLineEnd : command => do
   let str := txt.raw.getAtomVal -- .trim
-  -- dbg_trace str
-  elabTerm (<- `($(quote str))) none 
+  logInfo str
 
-#check Feature: あいうえお
-#check Feature: 1 + 2 = 3
+Feature: あいうえお
+Feature: 1 + 2 = 3
 
 -- 外部ファイルを読み込んで実行するコマンドの例
-syntax (name := loadLean) "load_from_file " str : command
+syntax (name := loadLean) "load_gherkin_file " str : command
 
 @[command_elab loadLean]
 def elabLoadLean : CommandElab := fun stx => do
-  let `(command| load_from_file $pathStx) := stx | throwUnsupportedSyntax
+  let `(command| load_gherkin_file $pathStx) := stx | throwUnsupportedSyntax
   let path := pathStx.getString
   let content ← liftIO <| IO.FS.readFile path
   let env ← getEnv
@@ -161,7 +160,7 @@ def elabLoadLean : CommandElab := fun stx => do
   | Except.error err => throwError (m!"{err}")
 
 -- 使い方 (my_script.txt の中身が Lean コードであれば実行される)
-load_from_file "./test.feature"
+load_gherkin_file "./test.feature"
 
 def main : IO Unit := do
   IO.println s!"Hello, World!"

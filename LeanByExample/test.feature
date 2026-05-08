@@ -1,1 +1,1 @@
-#check Feature: かきくけこ
+Feature: かきくけこ
