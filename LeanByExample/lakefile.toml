@@ -1,6 +1,9 @@
 name = "LeanByExample"
 version = "0.1.0"
-defaultTargets = ["leanbyexample"]
+defaultTargets = ["Main"]
 
 [[lean_lib]]
-name = "leanbyexample"
+name = "Main"
+
+[[lean_lib]]
+name = "EnvExt"

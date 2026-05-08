@@ -1,5 +1,6 @@
 import Lean
 import Lean.Parser.Term
+import EnvExt.EnvExt
 
 open Lean Elab Term Meta Command Parser PrettyPrinter
 
@@ -122,7 +123,6 @@ description: description!
 -- trailing comma は勝手にできるかもしれないが…
 -/
 
-
 def rawTextUntilLineEnd : Parser := 
   { fn := fun c s =>
       let startPos := s.pos
@@ -141,7 +141,7 @@ def rawTextUntilLineEnd.parenthesizer : Parenthesizer := Parenthesizer.visitToke
 
 elab "Feature:" txt:rawTextUntilLineEnd : command => do
   let str := txt.raw.getAtomVal -- .trim
-  logInfo str
+  modifyEnv fun env => addFeature env str
 
 Feature: あいうえお
 Feature: 1 + 2 = 3
@@ -159,9 +159,21 @@ def elabLoadLean : CommandElab := fun stx => do
   | Except.ok stx => elabCommand stx
   | Except.error err => throwError (m!"{err}")
 
+syntax (name := printFeatures) "#print_features" : command
+
+@[command_elab printFeatures]
+def elabPrintFeatures : CommandElab := fun _ => do
+  let features := getFeatures (← getEnv)
+  if features.isEmpty then
+    logInfo "no registered features"
+  else
+    logInfo <| String.intercalate "\n\n" features.toList
+
 -- 使い方 (my_script.txt の中身が Lean コードであれば実行される)
 load_gherkin_file "./test.feature"
 
 def main : IO Unit := do
   IO.println s!"Hello, World!"
   IO.println uc!"{System}は{User as target}を削除する".toReadableString
+
+#print_features
