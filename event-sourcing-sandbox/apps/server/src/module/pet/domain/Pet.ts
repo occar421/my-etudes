@@ -13,7 +13,7 @@ type PetCommands = RegisterPet | RenamePet;
 type PetEvents = PetRegistered | PetRenamed;
 
 export class Pet extends Entity<PetCommands, PetState, PetEvents>() {
-  execute(command: PetCommands) {
+  public execute(command: PetCommands) {
     switch (command.type) {
       case "RegisterPet":
         this.registerNewPet(command);
@@ -50,7 +50,7 @@ export class PetState extends EntityState(
     return this.props?.id;
   }
 
-  apply(event: PetEvents) {
+  public apply(event: PetEvents) {
     switch (event.type) {
       case "PetRegistered":
         this.registered(event);

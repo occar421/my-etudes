@@ -23,7 +23,7 @@ export function Entity<
       this.state.apply(event);
     }
 
-    abstract execute(command: C): void;
+    public abstract execute(command: C): void;
   }
 
   return Entity_;

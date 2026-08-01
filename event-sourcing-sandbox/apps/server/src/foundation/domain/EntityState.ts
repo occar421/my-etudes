@@ -52,7 +52,7 @@ export function EntityState<
       return this.entityId?.equals(other.entityId) ?? false;
     }
 
-    abstract apply(event: E): void;
+    public abstract apply(event: E): void;
   }
 
   return EntityState_;
