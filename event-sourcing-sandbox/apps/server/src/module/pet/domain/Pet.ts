@@ -35,15 +35,9 @@ class PetState extends EntityState(
         this.props.id = event.props.id;
         this.props.name = event.props.name;
         break;
+      default:
+        const _exhaustiveCheck: never = event;
+        throw new Error(`Unhandled event: ${JSON.stringify(_exhaustiveCheck)}`);
     }
   }
-
-  // eventApplyMap = new Map([
-  //   [
-  //     PetRenamed,
-  //     (e) => {
-  //       console.log("Pet renamed", e);
-  //     },
-  //   ],
-  // ]);
 }

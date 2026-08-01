@@ -40,7 +40,7 @@ export function EntityState<
       return this.entityId.equals(other.entityId);
     }
 
-    abstract apply(event: E): void; // TODO: event handler map
+    abstract apply(event: E): void;
   }
 
   return EntityState_;
