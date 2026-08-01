@@ -3,12 +3,12 @@ import { Name } from "./Name.ts";
 import { EntityState } from "../../../foundation/domain/EntityState.ts";
 import { z } from "zod";
 import { Entity } from "../../../foundation/domain/Entity.ts";
-import type { PetRenamed } from "./PetRenamed.ts";
-import type { PetRegistered } from "./PetRegistered.ts";
+import { PetRenamed } from "./PetRenamed.ts";
+import { PetRegistered } from "./PetRegistered.ts";
 
-type PetEvents = PetRenamed | PetRegistered;
+type PetEvent = PetRenamed | PetRegistered;
 
-export class Pet extends Entity<PetEvents, PetState>() {}
+export class Pet extends Entity<PetEvent, PetState>() {}
 
 class PetState extends EntityState(
   z.object({
@@ -21,29 +21,31 @@ class PetState extends EntityState(
   }),
 ) {
   get entityId() {
+    const a = this.eee();
+    
     return this.props.id;
   }
 
-  apply(event: PetEvents) {
-    switch (event.type) {
-      case "PetRenamed":
-        if (this.props.id.equals(event.props.id)) {
-          this.props.name = event.props.name;
-        }
-        break;
-      case "PetRegistered":
-        this.props.id = event.props.id;
-        this.props.name = event.props.name;
-        break;
-    }
-  }
+  // apply(event: PetEvent) {
+  //   switch (event.type) {
+  //     case "PetRenamed":
+  //       if (this.props.id.equals(event.props.id)) {
+  //         this.props.name = event.props.name;
+  //       }
+  //       break;
+  //     case "PetRegistered":
+  //       this.props.id = event.props.id;
+  //       this.props.name = event.props.name;
+  //       break;
+  //   }
+  // }
 
-  // eventApplyMap = new Map([
-  //   [
-  //     PetRenamed,
-  //     (e) => {
-  //       console.log("Pet renamed", e);
-  //     },
-  //   ],
-  // ]);
+  eventHandlers = {
+    PetRenamed: (e: PetRenamed) => {
+      console.log("Pet renamed", e);
+    },
+    PetRegistered: (e: PetRegistered) => {
+      console.log("Pet registered", e);
+    },
+  };
 }
