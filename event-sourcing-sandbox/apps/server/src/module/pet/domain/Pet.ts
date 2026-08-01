@@ -4,8 +4,9 @@ import { EntityState } from "../../../foundation/domain/EntityState.ts";
 import { z } from "zod";
 import { Entity } from "../../../foundation/domain/Entity.ts";
 import type { PetRenamed } from "./PetRenamed.ts";
+import type { PetRegistered } from "./PetRegistered.ts";
 
-type PetEvents = PetRenamed;
+type PetEvents = PetRenamed | PetRegistered;
 
 export class Pet extends Entity<PetEvents, PetState>() {}
 
@@ -30,6 +31,19 @@ class PetState extends EntityState(
           this.props.name = event.props.name;
         }
         break;
+      case "PetRegistered":
+        this.props.id = event.props.id;
+        this.props.name = event.props.name;
+        break;
     }
   }
+
+  // eventApplyMap = new Map([
+  //   [
+  //     PetRenamed,
+  //     (e) => {
+  //       console.log("Pet renamed", e);
+  //     },
+  //   ],
+  // ]);
 }
