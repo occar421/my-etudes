@@ -3,12 +3,42 @@ import { Name } from "./Name.ts";
 import { EntityState } from "../../../foundation/domain/EntityState.ts";
 import { z } from "zod";
 import { Entity } from "../../../foundation/domain/Entity.ts";
-import type { PetRenamed } from "./PetRenamed.ts";
-import type { PetRegistered } from "./PetRegistered.ts";
+import { PetRenamed } from "./PetRenamed.ts";
+import { PetRegistered } from "./PetRegistered.ts";
+import type { RegisterNewPet } from "./RegisterNewPet.ts";
+import type { RenamePet } from "./RenamePet.ts";
+
+type PetCommands = RegisterNewPet | RenamePet;
 
 type PetEvents = PetRegistered | PetRenamed;
 
-export class Pet extends Entity<PetEvents, PetState>() {}
+export class Pet extends Entity<PetEvents, PetState, PetCommands>() {
+  execute(command: PetCommands) {
+    switch (command.type) {
+      case "RegisterNewPet":
+        this.registerNewPet(command);
+        break;
+      case "RenamePet":
+        this.renamePet(command);
+        break;
+      default:
+        const _exhaustiveCheck: never = command;
+        throw new Error(`Unhandled command: ${JSON.stringify(_exhaustiveCheck)}`);
+    }
+  }
+
+  private registerNewPet(command: RegisterNewPet) {
+    const event = new PetRegistered({ id: Id.generate(), name: command.props.name });
+
+    this.appendEvent(event);
+  }
+
+  private renamePet(command: RenamePet) {
+    const event = new PetRenamed({ id: command.props.id, name: command.props.name });
+
+    this.appendEvent(event);
+  }
+}
 
 class PetState extends EntityState(
   z.object({
@@ -34,20 +64,18 @@ class PetState extends EntityState(
     }
   }
 
-  public registered(event: PetRegistered) {
+  private registered(event: PetRegistered) {
     this.fillProps({
       id: event.props.id,
       name: event.props.name,
     });
   }
 
-  public renamed(event: PetRenamed) {
+  private renamed(event: PetRenamed) {
     if (!this.initialized()) {
       throw new Error("Entity is not initialized"); // TODO: custom error
     }
 
-    if (this.props.id.equals(event.props.id)) {
-      this.props.name = event.props.name;
-    }
+    this.props.name = event.props.name;
   }
 }
