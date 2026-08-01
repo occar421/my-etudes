@@ -14,14 +14,10 @@ class PetState extends EntityState(
   z.object({
     id: z.instanceof(Id),
     name: z.instanceof(Name),
-    category: z.unknown(),
-    photos: z.unknown(),
-    tags: z.unknown(),
-    status: z.unknown(),
   }),
 ) {
   get entityId() {
-    return this.props.id;
+    return this.props?.id;
   }
 
   apply(event: PetEvents) {
@@ -39,11 +35,17 @@ class PetState extends EntityState(
   }
 
   public registered(event: PetRegistered) {
-    this.props.id = event.props.id;
-    this.props.name = event.props.name;
+    this.fillProps({
+      id: event.props.id,
+      name: event.props.name,
+    });
   }
 
   public renamed(event: PetRenamed) {
+    if (!this.initialized()) {
+      throw new Error("Entity is not initialized"); // TODO: custom error
+    }
+
     if (this.props.id.equals(event.props.id)) {
       this.props.name = event.props.name;
     }

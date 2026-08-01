@@ -9,11 +9,23 @@ export function EntityState<
   PT = z.infer<S>,
 >(stateSchema: S) {
   abstract class EntityState_ {
-    protected props: PT;
+    protected props?: PT;
+    public initialized(): this is this & { props: PT } {
+      return this.props !== undefined;
+    }
 
-    abstract get entityId(): InstanceType<ReturnType<typeof ValueObject>>;
+    abstract get entityId(): InstanceType<ReturnType<typeof ValueObject>> | undefined;
 
-    public constructor(props: PT, force: boolean = false) {
+    public constructor(props?: PT, force: boolean = false) {
+      if (props === undefined) {
+        this.props = undefined;
+        return;
+      }
+
+      this.fillProps(props, force);
+    }
+
+    protected fillProps(props: PT, force: boolean = false) {
       if (!force) {
         try {
           stateSchema.parse(props);
@@ -37,7 +49,7 @@ export function EntityState<
         return false;
       }
 
-      return this.entityId.equals(other.entityId);
+      return this.entityId?.equals(other.entityId) ?? false;
     }
 
     abstract apply(event: E): void;
