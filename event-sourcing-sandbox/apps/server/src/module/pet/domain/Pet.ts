@@ -12,34 +12,6 @@ type PetCommands = RegisterPet | RenamePet;
 
 type PetEvents = PetRegistered | PetRenamed;
 
-export class Pet extends Entity<PetCommands, PetState, PetEvents>() {
-  public execute(command: PetCommands) {
-    switch (command.type) {
-      case "RegisterPet":
-        this.registerPet(command);
-        break;
-      case "RenamePet":
-        this.renamePet(command);
-        break;
-      default:
-        const _exhaustiveCheck: never = command;
-        throw new Error(`Unhandled command: ${JSON.stringify(_exhaustiveCheck)}`);
-    }
-  }
-
-  private registerPet(command: RegisterPet) {
-    const event = new PetRegistered({ id: Id.generate(), name: command.props.name });
-
-    this.appendEvent(event);
-  }
-
-  private renamePet(command: RenamePet) {
-    const event = new PetRenamed({ id: command.props.id, name: command.props.name });
-
-    this.appendEvent(event);
-  }
-}
-
 export class PetState extends EntityState(
   z.object({
     id: z.instanceof(Id),
@@ -77,5 +49,33 @@ export class PetState extends EntityState(
     }
 
     this.props.name = event.props.name;
+  }
+}
+
+export class Pet extends Entity(PetState) {
+  public execute(command: PetCommands) {
+    switch (command.type) {
+      case "RegisterPet":
+        this.registerPet(command);
+        break;
+      case "RenamePet":
+        this.renamePet(command);
+        break;
+      default:
+        const _exhaustiveCheck: never = command;
+        throw new Error(`Unhandled command: ${JSON.stringify(_exhaustiveCheck)}`);
+    }
+  }
+
+  private registerPet(command: RegisterPet) {
+    const event = new PetRegistered({ id: Id.generate(), name: command.props.name });
+
+    this.appendEvent(event);
+  }
+
+  private renamePet(command: RenamePet) {
+    const event = new PetRenamed({ id: command.props.id, name: command.props.name });
+
+    this.appendEvent(event);
   }
 }

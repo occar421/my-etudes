@@ -8,7 +8,7 @@ export function EntityState<
   E extends InstanceType<ReturnType<typeof DomainEvent>>,
   PT = z.infer<S>,
 >(stateSchema: S) {
-  abstract class EntityState_ {
+  abstract class EntityState_<EE = E> {
     protected props?: PT;
     public initialized(): this is this & { props: PT } {
       return this.props !== undefined;
@@ -52,7 +52,7 @@ export function EntityState<
       return this.entityId?.equals(other.entityId) ?? false;
     }
 
-    public abstract apply(event: E): void;
+    public abstract apply(event: EE): void;
   }
 
   return EntityState_;
