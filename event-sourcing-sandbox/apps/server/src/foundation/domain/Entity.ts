@@ -12,11 +12,15 @@ export function Entity<
     private events: E[] = [];
     protected state: S;
 
-    public constructor(events: E[], initialState = new SCtor() as S) {
+    public constructor(events: E[], initialState: S) {
       this.state = initialState;
       for (const event of events) {
         this.appendEvent(event);
       }
+    }
+
+    public static init<T extends new (...args: any[]) => any>(this: T): InstanceType<T> {
+      return new this([], new SCtor() as S);
     }
 
     protected appendEvent(event: E) {

@@ -7,4 +7,8 @@ export class RegisterPet extends Command(
   z.object({
     name: z.instanceof(Name),
   }),
-) {}
+) {
+  public static with(name: Name) {
+    return new this({ name });
+  }
+}

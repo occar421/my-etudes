@@ -78,4 +78,8 @@ export class Pet extends Entity(PetState) {
 
     this.appendEvent(event);
   }
+
+  public get id(): Id | undefined {
+    return this.state.entityId;
+  }
 }
