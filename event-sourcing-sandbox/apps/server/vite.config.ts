@@ -1,5 +1,6 @@
 import { defineConfig } from "vite-plus";
 import devServer from "@hono/vite-dev-server";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   fmt: {},
@@ -12,6 +13,7 @@ export default defineConfig({
     cache: true,
   },
   plugins: [
+    tsconfigPaths(),
     devServer({
       entry: "./src/index.ts",
     }),

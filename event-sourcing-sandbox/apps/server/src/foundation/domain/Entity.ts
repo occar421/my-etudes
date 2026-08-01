@@ -3,9 +3,9 @@ import type { EntityState } from "./EntityState.ts";
 import type { Command } from "./Command.ts";
 
 export function Entity<
-  E extends InstanceType<ReturnType<typeof DomainEvent>>,
-  S extends InstanceType<ReturnType<typeof EntityState>>,
   C extends InstanceType<ReturnType<typeof Command>>,
+  S extends InstanceType<ReturnType<typeof EntityState>>,
+  E extends InstanceType<ReturnType<typeof DomainEvent>>,
 >() {
   abstract class Entity_ {
     private events: E[] = [];

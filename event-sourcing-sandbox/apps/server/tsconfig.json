@@ -21,7 +21,12 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Zod */
-    "strict": true
+    "strict": true,
+
+    /* Project */
+    "paths": {
+      "@/*": ["./src/foundation/*"]
+    }
   },
   "include": ["src"]
 }

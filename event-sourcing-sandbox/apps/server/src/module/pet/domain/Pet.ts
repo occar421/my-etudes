@@ -1,18 +1,18 @@
 import { Id } from "./Id.ts";
 import { Name } from "./Name.ts";
-import { EntityState } from "../../../foundation/domain/EntityState.ts";
+import { Entity } from "@/domain/Entity.ts";
+import { EntityState } from "@/domain/EntityState.ts";
 import { z } from "zod";
-import { Entity } from "../../../foundation/domain/Entity.ts";
-import { PetRenamed } from "./PetRenamed.ts";
-import { PetRegistered } from "./PetRegistered.ts";
-import type { RegisterNewPet } from "./RegisterNewPet.ts";
-import type { RenamePet } from "./RenamePet.ts";
+import { PetRenamed } from "./events/PetRenamed.ts";
+import { PetRegistered } from "./events/PetRegistered.ts";
+import type { RegisterNewPet } from "./commands/RegisterNewPet.ts";
+import type { RenamePet } from "./commands/RenamePet.ts";
 
 type PetCommands = RegisterNewPet | RenamePet;
 
 type PetEvents = PetRegistered | PetRenamed;
 
-export class Pet extends Entity<PetEvents, PetState, PetCommands>() {
+export class Pet extends Entity<PetCommands, PetState, PetEvents>() {
   execute(command: PetCommands) {
     switch (command.type) {
       case "RegisterNewPet":
@@ -40,7 +40,7 @@ export class Pet extends Entity<PetEvents, PetState, PetCommands>() {
   }
 }
 
-class PetState extends EntityState(
+export class PetState extends EntityState(
   z.object({
     id: z.instanceof(Id),
     name: z.instanceof(Name),

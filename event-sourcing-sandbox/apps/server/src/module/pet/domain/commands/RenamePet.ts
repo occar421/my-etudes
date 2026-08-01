@@ -1,6 +1,7 @@
-import { Command } from "../../../foundation/domain/Command.ts";
+import { Command } from "@/domain/Command.ts";
 import { z } from "zod";
-import { Name } from "./Name.ts";
+import { Id } from "../Id.ts";
+import { Name } from "../Name.ts";
 
 export class RenamePet extends Command(
   "RenamePet",
