@@ -23,7 +23,7 @@ export class RegisterPet implements UseCase<Request, Response> {
     const command = RegisterPetCommand.with(name);
     const newPet = Pet.init();
 
-    newPet.execute(command);
+    newPet.execute(command); // TODO: domain error handling
 
     await this.petRepository.save(newPet);
 

@@ -1,6 +1,8 @@
 import { Hono } from "hono";
+import { petController } from "./module/pet/controller/controller.ts";
 
 const app = new Hono();
-app.get("/", (c) => c.text("Hello Vite+"));
+
+app.route("/", petController());
 
 export default app;
