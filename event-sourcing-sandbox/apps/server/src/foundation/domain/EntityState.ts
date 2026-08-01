@@ -11,7 +11,7 @@ export function EntityState<
   abstract class EntityState_ {
     protected props: PT;
 
-    abstract get id(): InstanceType<ReturnType<typeof ValueObject>>;
+    abstract get entityId(): InstanceType<ReturnType<typeof ValueObject>>;
 
     public constructor(props: PT, force: boolean = false) {
       if (!force) {
@@ -33,11 +33,11 @@ export function EntityState<
     }
 
     public equals(other: EntityState_): boolean {
-      if (!other?.id) {
+      if (!other?.entityId) {
         return false;
       }
 
-      return this.id.equals(other.id);
+      return this.entityId.equals(other.entityId);
     }
 
     abstract apply(event: E): void; // TODO: event handler map

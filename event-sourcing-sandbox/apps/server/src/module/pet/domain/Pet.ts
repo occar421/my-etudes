@@ -19,7 +19,7 @@ class PetState extends EntityState(
     status: z.unknown(),
   }),
 ) {
-  get id() {
+  get entityId() {
     return this.props.id;
   }
 
