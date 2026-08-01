@@ -5,17 +5,17 @@ import { EntityState } from "@/domain/EntityState.ts";
 import { z } from "zod";
 import { PetRenamed } from "./events/PetRenamed.ts";
 import { PetRegistered } from "./events/PetRegistered.ts";
-import type { RegisterNewPet } from "./commands/RegisterNewPet.ts";
+import type { RegisterPet } from "./commands/RegisterPet.ts";
 import type { RenamePet } from "./commands/RenamePet.ts";
 
-type PetCommands = RegisterNewPet | RenamePet;
+type PetCommands = RegisterPet | RenamePet;
 
 type PetEvents = PetRegistered | PetRenamed;
 
 export class Pet extends Entity<PetCommands, PetState, PetEvents>() {
   execute(command: PetCommands) {
     switch (command.type) {
-      case "RegisterNewPet":
+      case "RegisterPet":
         this.registerNewPet(command);
         break;
       case "RenamePet":
@@ -27,7 +27,7 @@ export class Pet extends Entity<PetCommands, PetState, PetEvents>() {
     }
   }
 
-  private registerNewPet(command: RegisterNewPet) {
+  private registerNewPet(command: RegisterPet) {
     const event = new PetRegistered({ id: Id.generate(), name: command.props.name });
 
     this.appendEvent(event);
