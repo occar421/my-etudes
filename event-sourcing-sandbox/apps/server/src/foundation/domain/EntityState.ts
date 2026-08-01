@@ -7,7 +7,7 @@ export function EntityState<
   S extends ZodType,
   E extends InstanceType<ReturnType<typeof DomainEvent>>,
   PT = z.infer<S>,
->(schema: S) {
+>(stateSchema: S) {
   abstract class EntityState_ {
     protected props: PT;
 
@@ -16,7 +16,7 @@ export function EntityState<
     public constructor(props: PT, force: boolean = false) {
       if (!force) {
         try {
-          schema.parse(props);
+          stateSchema.parse(props);
         } catch (e: unknown) {
           if (e instanceof ZodError) {
             throw new ConstraintError(e);
@@ -29,7 +29,7 @@ export function EntityState<
     }
 
     protected static get schema(): S {
-      return schema;
+      return stateSchema;
     }
 
     public equals(other: EntityState_): boolean {
