@@ -244,6 +244,9 @@ catalogs:
     vite-plus:
       specifier: 0.2.6
       version: 0.2.6
+    zod:
+      specifier: ^4.4.3
+      version: 4.4.3
 
 overrides:
   vite: npm:@voidzero-dev/vite-plus-core@0.2.6
@@ -264,6 +267,9 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.32
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
     devDependencies:
       '@hono/vite-dev-server':
         specifier: 'catalog:'
