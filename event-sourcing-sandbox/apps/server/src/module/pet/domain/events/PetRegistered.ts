@@ -8,5 +8,6 @@ export class PetRegistered extends DomainEvent(
   z.object({
     id: z.instanceof(Id),
     name: z.instanceof(Name),
+    // TODO: by(user)
   }),
 ) {}

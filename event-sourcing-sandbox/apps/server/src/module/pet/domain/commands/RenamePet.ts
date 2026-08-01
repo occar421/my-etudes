@@ -8,5 +8,6 @@ export class RenamePet extends Command(
   z.object({
     id: z.instanceof(Id),
     name: z.instanceof(Name),
+    // TODO: by(user)
   }),
 ) {}

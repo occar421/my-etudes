@@ -9,6 +9,7 @@ export function DomainEvent<
   abstract class DomainEvent_ {
     public readonly type: TType = type;
     public readonly payload: TPayload;
+    // TODO: target aggregate, created_at, created_by(system)
 
     public constructor(payload: TPayload, force: boolean = false) {
       if (!force) {

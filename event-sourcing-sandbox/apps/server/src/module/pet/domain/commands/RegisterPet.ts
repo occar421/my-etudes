@@ -6,6 +6,7 @@ export class RegisterPet extends Command(
   "RegisterPet",
   z.object({
     name: z.instanceof(Name),
+    // TODO: by(user)
   }),
 ) {
   public static with(name: Name) {
