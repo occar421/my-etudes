@@ -6,7 +6,7 @@ import { Entity } from "../../../foundation/domain/Entity.ts";
 import type { PetRenamed } from "./PetRenamed.ts";
 import type { PetRegistered } from "./PetRegistered.ts";
 
-type PetEvents = PetRenamed | PetRegistered;
+type PetEvents = PetRegistered | PetRenamed;
 
 export class Pet extends Entity<PetEvents, PetState>() {}
 
@@ -26,18 +26,26 @@ class PetState extends EntityState(
 
   apply(event: PetEvents) {
     switch (event.type) {
-      case "PetRenamed":
-        if (this.props.id.equals(event.props.id)) {
-          this.props.name = event.props.name;
-        }
-        break;
       case "PetRegistered":
-        this.props.id = event.props.id;
-        this.props.name = event.props.name;
+        this.registered(event);
+        break;
+      case "PetRenamed":
+        this.renamed(event);
         break;
       default:
         const _exhaustiveCheck: never = event;
         throw new Error(`Unhandled event: ${JSON.stringify(_exhaustiveCheck)}`);
+    }
+  }
+
+  public registered(event: PetRegistered) {
+    this.props.id = event.props.id;
+    this.props.name = event.props.name;
+  }
+
+  public renamed(event: PetRenamed) {
+    if (this.props.id.equals(event.props.id)) {
+      this.props.name = event.props.name;
     }
   }
 }
