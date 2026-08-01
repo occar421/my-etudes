@@ -16,7 +16,7 @@ export class Pet extends Entity<PetCommands, PetState, PetEvents>() {
   public execute(command: PetCommands) {
     switch (command.type) {
       case "RegisterPet":
-        this.registerNewPet(command);
+        this.registerPet(command);
         break;
       case "RenamePet":
         this.renamePet(command);
@@ -27,7 +27,7 @@ export class Pet extends Entity<PetCommands, PetState, PetEvents>() {
     }
   }
 
-  private registerNewPet(command: RegisterPet) {
+  private registerPet(command: RegisterPet) {
     const event = new PetRegistered({ id: Id.generate(), name: command.props.name });
 
     this.appendEvent(event);
