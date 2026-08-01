@@ -1,13 +1,12 @@
-import type { DomainEvent } from "./DomainEvent.ts";
 import type { EntityState } from "./EntityState.ts";
 import type { Command } from "./Command.ts";
 
 export function Entity<
   C extends InstanceType<ReturnType<typeof Command>>,
-  E extends InstanceType<ReturnType<typeof DomainEvent>>,
   SC extends new () => InstanceType<ReturnType<typeof EntityState>>,
 >(SCtor: SC) {
   type S = InstanceType<SC>;
+  type E = Parameters<S["apply"]>[0];
 
   abstract class Entity_ {
     private events: E[] = [];
