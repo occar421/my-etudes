@@ -1,15 +1,16 @@
 import { z, ZodError, type ZodType } from "zod";
 import { ConstraintError } from "./ConstraintError.ts";
 
-export function DomainEvent<T extends string, S extends ZodType, PT = z.infer<S>>(
-  type: T,
-  schema: S,
-) {
+export function DomainEvent<
+  TType extends string,
+  TSchema extends ZodType,
+  TProps = z.infer<TSchema>,
+>(type: TType, schema: TSchema) {
   abstract class DomainEvent_ {
-    public readonly type: T = type;
-    public readonly props: PT;
+    public readonly type: TType = type;
+    public readonly props: TProps;
 
-    public constructor(props: PT, force: boolean = false) {
+    public constructor(props: TProps, force: boolean = false) {
       if (!force) {
         try {
           schema.parse(props);
@@ -24,7 +25,7 @@ export function DomainEvent<T extends string, S extends ZodType, PT = z.infer<S>
       this.props = { ...props };
     }
 
-    protected static get schema(): S {
+    protected static get schema(): TSchema {
       return schema;
     }
   }

@@ -2,10 +2,10 @@ import type { EntityState } from "./EntityState.ts";
 import type { Command } from "./Command.ts";
 
 export function Entity<
-  C extends InstanceType<ReturnType<typeof Command>>,
-  SC extends new () => InstanceType<ReturnType<typeof EntityState>>,
->(SCtor: SC) {
-  type S = InstanceType<SC>;
+  TCommand extends InstanceType<ReturnType<typeof Command>>,
+  TStateCtor extends new () => InstanceType<ReturnType<typeof EntityState>>,
+>(SCtor: TStateCtor) {
+  type S = InstanceType<TStateCtor>;
   type E = Parameters<S["apply"]>[0];
 
   abstract class Entity_ {
@@ -24,7 +24,7 @@ export function Entity<
       this.state.apply(event);
     }
 
-    public abstract execute(command: C): void;
+    public abstract execute(command: TCommand): void;
   }
 
   return Entity_;

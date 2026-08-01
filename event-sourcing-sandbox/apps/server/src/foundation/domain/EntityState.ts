@@ -4,19 +4,19 @@ import { ConstraintError } from "./ConstraintError.ts";
 import type { DomainEvent } from "./DomainEvent.ts";
 
 export function EntityState<
-  S extends ZodType,
-  E extends InstanceType<ReturnType<typeof DomainEvent>>,
-  PT = z.infer<S>,
->(stateSchema: S) {
+  TState extends ZodType,
+  TEvent extends InstanceType<ReturnType<typeof DomainEvent>>,
+  TProps = z.infer<TState>,
+>(stateSchema: TState) {
   abstract class EntityState_ {
-    protected props?: PT;
-    public initialized(): this is this & { props: PT } {
+    protected props?: TProps;
+    public initialized(): this is this & { props: TProps } {
       return this.props !== undefined;
     }
 
     abstract get entityId(): InstanceType<ReturnType<typeof ValueObject>> | undefined;
 
-    public constructor(props?: PT, force: boolean = false) {
+    public constructor(props?: TProps, force: boolean = false) {
       if (props === undefined) {
         this.props = undefined;
         return;
@@ -25,7 +25,7 @@ export function EntityState<
       this.fillProps(props, force);
     }
 
-    protected fillProps(props: PT, force: boolean = false) {
+    protected fillProps(props: TProps, force: boolean = false) {
       if (!force) {
         try {
           stateSchema.parse(props);
@@ -40,7 +40,7 @@ export function EntityState<
       this.props = { ...props };
     }
 
-    protected static get schema(): S {
+    protected static get schema(): TState {
       return stateSchema;
     }
 
@@ -52,7 +52,7 @@ export function EntityState<
       return this.entityId?.equals(other.entityId) ?? false;
     }
 
-    public abstract apply(event: E): void;
+    public abstract apply(event: TEvent): void;
   }
 
   return EntityState_;

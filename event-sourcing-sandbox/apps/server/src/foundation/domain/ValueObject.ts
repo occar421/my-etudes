@@ -5,11 +5,11 @@ import { ConstraintError } from "./ConstraintError.ts";
  * @desc ValueObjects are objects that we determine their
  * equality through their structural property.
  */
-export function ValueObject<S extends ZodType, PT = z.infer<S>>(schema: S) {
+export function ValueObject<TSchema extends ZodType, TProps = z.infer<TSchema>>(schema: TSchema) {
   abstract class ValueObject_ {
-    protected props: PT;
+    protected props: TProps;
 
-    public constructor(props: PT, force: boolean = false) {
+    public constructor(props: TProps, force: boolean = false) {
       if (!force) {
         try {
           schema.parse(props);
@@ -24,7 +24,7 @@ export function ValueObject<S extends ZodType, PT = z.infer<S>>(schema: S) {
       this.props = { ...props };
     }
 
-    protected static get schema(): S {
+    protected static get schema(): TSchema {
       return schema;
     }
 
