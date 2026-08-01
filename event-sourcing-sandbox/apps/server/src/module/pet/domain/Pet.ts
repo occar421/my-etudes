@@ -1,23 +1,12 @@
-import type { PetId } from "./PetId";
-import type { PetName } from "./PetName.ts";
+import { PetId } from "./PetId";
+import { PetName } from "./PetName.ts";
+import { Entity } from "../../../foundation/domain/Entity.ts";
 
-export class Pet {
-  private value: {
-    id: PetId;
-    name: PetName;
-    category: unknown;
-    photos: unknown;
-    tags: unknown;
-    status: unknown;
-  };
-
-  private constructor(args: Pet["value"]) {
-    this.value = args;
-  }
-
-  // public function rename() {}
-
-  public static reconstruct(args: Pet["value"]): Pet {
-    return new Pet(args);
-  }
-}
+export class Pet extends Entity<{
+  id: PetId;
+  name: PetName;
+  category: unknown;
+  photos: unknown;
+  tags: unknown;
+  status: unknown;
+}>((props) => props.id) {}
