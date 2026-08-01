@@ -4,16 +4,16 @@ import { ConstraintError } from "./ConstraintError.ts";
 export function DomainEvent<
   TType extends string,
   TSchema extends ZodType,
-  TProps = z.infer<TSchema>,
+  TPayload = z.infer<TSchema>,
 >(type: TType, schema: TSchema) {
   abstract class DomainEvent_ {
     public readonly type: TType = type;
-    public readonly props: TProps;
+    public readonly payload: TPayload;
 
-    public constructor(props: TProps, force: boolean = false) {
+    public constructor(payload: TPayload, force: boolean = false) {
       if (!force) {
         try {
-          schema.parse(props);
+          schema.parse(payload);
         } catch (e: unknown) {
           if (e instanceof ZodError) {
             throw new ConstraintError(e);
@@ -22,7 +22,7 @@ export function DomainEvent<
         }
       }
 
-      this.props = { ...props };
+      this.payload = { ...payload };
     }
 
     protected static get schema(): TSchema {

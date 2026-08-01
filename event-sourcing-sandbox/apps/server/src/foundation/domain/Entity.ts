@@ -29,6 +29,10 @@ export function Entity<
     }
 
     public abstract execute(command: TCommand): void;
+
+    public getEventsAfter() {
+      return this.events;
+    }
   }
 
   return Entity_;

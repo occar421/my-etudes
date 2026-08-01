@@ -38,8 +38,8 @@ export class PetState extends EntityState(
 
   private registered(event: PetRegistered) {
     this.fillProps({
-      id: event.props.id,
-      name: event.props.name,
+      id: event.payload.id,
+      name: event.payload.name,
     });
   }
 
@@ -48,7 +48,7 @@ export class PetState extends EntityState(
       throw new Error("Entity is not initialized"); // TODO: custom error
     }
 
-    this.props.name = event.props.name;
+    this.props.name = event.payload.name;
   }
 }
 

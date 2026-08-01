@@ -2,14 +2,15 @@ import { Hono } from "hono";
 import { RegisterPet } from "../usecase/RegisterPet.ts";
 import * as console from "node:console";
 import { Name } from "../domain/Name.ts";
+import type { Pet } from "../domain/Pet.ts";
 
 export function petController(): Hono {
   const app = new Hono();
 
   const petRepo = {
-    async save(pet: unknown) {
+    async save(pet: Pet) {
       // TODO: save events to DB
-      console.log(pet);
+      console.log(pet.getEventsAfter());
     },
   };
 
