@@ -1,15 +1,26 @@
-import { z, ZodError, type ZodObject } from "zod";
+import { z, ZodError, type ZodType } from "zod";
 import { ConstraintError } from "./ConstraintError.ts";
 
 /**
  * @desc ValueObjects are objects that we determine their
  * equality through their structural property.
  */
-export function ValueObject<S extends ZodObject, PT = z.infer<S>>(schema: S) {
-  return class ValueObject {
+export function ValueObject<S extends ZodType, PT = z.infer<S>>(schema: S) {
+  abstract class ValueObject_ {
     protected props: PT;
 
-    protected constructor(props: PT) {
+    public constructor(props: PT, force: boolean = false) {
+      if (!force) {
+        try {
+          schema.parse(props);
+        } catch (e: unknown) {
+          if (e instanceof ZodError) {
+            throw new ConstraintError(e);
+          }
+          throw e;
+        }
+      }
+
       this.props = { ...props };
     }
 
@@ -17,39 +28,14 @@ export function ValueObject<S extends ZodObject, PT = z.infer<S>>(schema: S) {
       return schema;
     }
 
-    public static reconstruct<Clazz extends { prototype: unknown }, Inst = Clazz["prototype"]>(
-      this: Clazz,
-      props: PT,
-    ): Inst {
-      try {
-        schema.parse(props);
-        return new (this as unknown as new (props: PT) => Inst)(props);
-      } catch (e: unknown) {
-        if (e instanceof ZodError) {
-          throw new ConstraintError(e);
-        }
-        throw e;
-      }
-    }
-
-    public static safeReconstruct<Clazz extends { prototype: unknown }, Inst = Clazz["prototype"]>(
-      this: Clazz,
-      props: PT,
-    ): { success: true; data: Inst } | { success: false; error: ConstraintError } {
-      const result = schema.safeParse(props);
-      if (result.success) {
-        return { success: true, data: new (this as unknown as new (props: PT) => Inst)(props) };
-      } else {
-        return { success: false, error: new ConstraintError(result.error) };
-      }
-    }
-
-    public equals(vo?: ValueObject): boolean {
+    public equals(vo?: ValueObject_): boolean {
       if (!vo?.props) {
         return false;
       }
 
       return JSON.stringify(this) === JSON.stringify(vo);
     }
-  };
+  }
+
+  return ValueObject_;
 }
