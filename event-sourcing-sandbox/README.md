@@ -27,3 +27,7 @@ vp run -r build
 ```bash
 vp run dev
 ```
+
+## Reference
+
+- https://github.com/stemmlerjs/ddd-forum/tree/master/src/shared
