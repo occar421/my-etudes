@@ -20,6 +20,7 @@ catalog:
   react: ^19.2.8
   react-dom: ^19.2.8
   typescript: ^7.0.2
+  uuid: ^14.0.1
   vite: npm:@voidzero-dev/vite-plus-core@0.2.6
   vite-plus: 0.2.6
   vite-tsconfig-paths: ^6.1.1
