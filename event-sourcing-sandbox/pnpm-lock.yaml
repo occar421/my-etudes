@@ -235,6 +235,9 @@ catalogs:
     hono:
       specifier: ^4.12.32
       version: 4.12.32
+    postgres:
+      specifier: ^3.4.9
+      version: 3.4.9
     react:
       specifier: ^19.2.8
       version: 19.2.8
@@ -276,6 +279,9 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.32
+      postgres:
+        specifier: 'catalog:'
+        version: 3.4.9
       uuid:
         specifier: 'catalog:'
         version: 14.0.1
@@ -1704,6 +1710,10 @@ packages:
   postcss@8.5.25:
     resolution: {integrity: sha512-DTPx3RWSSnWyzLxQnlH0rJP+EW5ekl16ZU4/psbIhA0e53kJfdgaN5vKM+xP7yJtXVu+nfdVFmlgFDEKAe4Pyw==}
     engines: {node: ^10 || ^12 || >=14}
+
+  postgres@3.4.9:
+    resolution: {integrity: sha512-GD3qdB0x1z9xgFI6cdRD6xu2Sp2WCOEoe3mtnyB5Ee0XrrL5Pe+e4CCnJrRMnL1zYtRDZmQQVbvOttLnKDLnaw==}
+    engines: {node: '>=12'}
 
   prettier@3.9.6:
     resolution: {integrity: sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g==}
@@ -3168,6 +3178,8 @@ snapshots:
       nanoid: 3.3.16
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  postgres@3.4.9: {}
 
   prettier@3.9.6: {}
 

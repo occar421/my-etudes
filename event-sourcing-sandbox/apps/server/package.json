@@ -4,12 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vp dev",
-    "check": "vp check --fix"
+    "dev": "vp run gen:* && vp dev",
+    "check": "vp run gen:* && vp check --fix",
+    "gen:*": "vp run gen:sql",
+    "gen:sql": "sqlc generate && vp fmt ./db"
   },
   "dependencies": {
     "@hono/zod-validator": "catalog:",
     "hono": "catalog:",
+    "postgres": "catalog:",
     "uuid": "catalog:",
     "zod": "catalog:"
   },
