@@ -17,7 +17,6 @@
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vite-plus": "catalog:",
-    "vite-tsconfig-paths": "catalog:"
+    "vite-plus": "catalog:"
   }
 }

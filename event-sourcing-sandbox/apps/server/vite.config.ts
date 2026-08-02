@@ -12,8 +12,10 @@ export default defineConfig({
   run: {
     cache: true,
   },
+  resolve: {
+    tsconfigPaths: true,
+  },
   plugins: [
-    tsconfigPaths(),
     devServer({
       entry: "./src/index.ts",
     }),
