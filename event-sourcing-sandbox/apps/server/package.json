@@ -8,6 +8,7 @@
     "check": "vp check --fix"
   },
   "dependencies": {
+    "@hono/zod-validator": "catalog:",
     "hono": "catalog:",
     "zod": "catalog:"
   },

@@ -208,6 +208,9 @@ catalogs:
     '@hono/vite-dev-server':
       specifier: ^0.26.1
       version: 0.26.1
+    '@hono/zod-validator':
+      specifier: ^0.9.0
+      version: 0.9.0
     '@tanstack/react-router':
       specifier: ^1.170.18
       version: 1.170.18
@@ -267,6 +270,9 @@ importers:
 
   apps/server:
     dependencies:
+      '@hono/zod-validator':
+        specifier: 'catalog:'
+        version: 0.9.0(hono@4.12.32)(zod@4.4.3)
       hono:
         specifier: 'catalog:'
         version: 4.12.32
@@ -446,6 +452,12 @@ packages:
         optional: true
       wrangler:
         optional: true
+
+  '@hono/zod-validator@0.9.0':
+    resolution: {integrity: sha512-n0ZSXmCiHVIp4Y5wlOOyZCeTd/rsawA/qW1cipB8QOYKZ9N8Tk0nZUZCXho9cu374AN4JpDNKioNKBJ/W+LBug==}
+    peerDependencies:
+      hono: '>=4.11.2'
+      zod: ^3.25.0 || ^4.0.0
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -2102,6 +2114,11 @@ snapshots:
       '@hono/node-server': 1.19.17(hono@4.12.32)
       hono: 4.12.32
       minimatch: 9.0.9
+
+  '@hono/zod-validator@0.9.0(hono@4.12.32)(zod@4.4.3)':
+    dependencies:
+      hono: 4.12.32
+      zod: 4.4.3
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:

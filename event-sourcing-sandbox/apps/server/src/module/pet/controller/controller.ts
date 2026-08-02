@@ -3,6 +3,8 @@ import { RegisterPet } from "../usecase/RegisterPet.ts";
 import * as console from "node:console";
 import { Name } from "../domain/Name.ts";
 import type { Pet } from "../domain/Pet.ts";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
 
 export function petController(): Hono {
   const app = new Hono();
@@ -14,25 +16,26 @@ export function petController(): Hono {
     },
   };
 
-  app.post("/pets", async (c) => {
-    const body = await c.req.json();
-    const nameVar = body.name;
-    if (nameVar === undefined) {
-      return c.json({ error: "name is required" }, 400);
-    }
+  app.post(
+    "/pets",
+    zValidator("json", z.object({ name: z.string().min(1).max(100) })),
+    async (c) => {
+      const body = c.req.valid("json");
 
-    let name: Name;
-    try {
-      name = new Name({ value: nameVar });
-    } catch (error: unknown) {
-      return c.json({ error: error }, 400);
-    }
+      let name: Name;
+      try {
+        name = new Name({ value: body.name });
+      } catch (error: unknown) {
+        // TODO: domain error handling
+        return c.json({ error: error }, 400);
+      }
 
-    const usecase = new RegisterPet(petRepo);
-    const response = await usecase.execute({ name });
+      const usecase = new RegisterPet(petRepo);
+      const response = await usecase.execute({ name });
 
-    return c.json({ id: response.id.rawValue });
-  });
+      return c.json({ id: response.id.rawValue });
+    },
+  );
 
   return app;
 }
